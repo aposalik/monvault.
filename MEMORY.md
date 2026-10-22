@@ -52,7 +52,6 @@ Alternative path: `SHIPPED → DISPUTED`. A `SHIPPED` order with an expired revi
 ## Open decisions
 
 - Will off-chain shipping/order metadata use seeded JSON or Supabase Postgres?
-- Confirm Fahad's GitHub username and add him with Write access.
 - Confirm the organizer's currently recommended testnet faucet/RPC at the event.
 
 ## Current implementation state
@@ -62,10 +61,9 @@ Alternative path: `SHIPPED → DISPUTED`. A `SHIPPED` order with an expired revi
 - 18 Foundry tests passed in the operator terminal; OpenClaw independently verified Solidity formatting and kept web lint/typecheck/build green.
 - Next.js 16 + TypeScript web workspace is scaffolded and passes lint, typecheck, and production build.
 - Root npm workspace, lockfile, public environment template, and seeded demo product exist.
-- Foundry/Anvil 1.8.6 are installed under `~/.foundry/bin`.
-- OpenClaw's isolated command environment still cannot download or see solc 0.8.28 because its egress trust certificate remains invalid, so forge verification inside tool execution is still blocked.
-- GitHub remote is configured and the foundation is committed locally; remote push is blocked by the same TLS issue plus stale machine-level GitHub CLI credentials.
+- Foundational rebrand and design system pushed to `origin/chore/monvault-rebrand-design`.
+- GitHub CLI authenticated; Fahad's F1–F6 issues created and assigned to `@MFahadFaisal`.
 
 ## Last updated
 
-2026-10-22 — Phase 2 escrow implementation completed with 18 passing Foundry tests; testnet deployment is next.
+2026-10-23 — `chore/monvault-rebrand-design` pushed to GitHub; Fahad's F1–F6 issues created and assigned; ready for PR/merge and Phase 3 testnet deployment (S2).
