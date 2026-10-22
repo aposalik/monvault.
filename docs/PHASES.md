@@ -31,9 +31,9 @@ Finish a small verified payment flow before visual polish or optional integratio
 3. [x] Add shared environment examples; never add real keys.
 4. [x] Add lint, typecheck, build, and contract-test commands.
 5. [x] Add a simple seeded product catalog and seller identity placeholder.
-6. [ ] Install the Foundry binary and run `forge test` once the host TLS trust chain is repaired.
+6. [x] Install Foundry and run the first red/green escrow test in the operator's normal terminal.
 
-**Current verification:** Web lint, TypeScript, and production build pass. Foundry installation is blocked by an expired host egress certificate; TLS verification was not disabled.
+**Current verification:** Web lint, TypeScript, and production build pass. Foundry/Anvil 1.8.6 are installed. The first `createOrder` payment-lock behavior completed a user-verified red/green cycle. OpenClaw's isolated command environment still cannot access the cached compiler because its egress certificate remains invalid.
 
 **Exit check:** Web app runs locally; `forge test`, typecheck, and production build run successfully.
 

@@ -55,9 +55,10 @@ Alternative path: `SHIPPED → DISPUTED`. A `SHIPPED` order with an expired revi
 
 - Next.js 16 + TypeScript web workspace is scaffolded and passes lint, typecheck, and production build.
 - Root npm workspace, lockfile, public environment template, and seeded demo product exist.
-- Foundry project structure and configuration exist, but the Foundry binary installation is blocked by the host's expired TLS trust certificate.
+- Foundry/Anvil 1.8.6 are installed under `~/.foundry/bin`; the initial payment-lock test completed a user-verified red/green cycle in the operator's normal terminal.
+- OpenClaw's isolated command environment still cannot download or see solc 0.8.28 because its egress trust certificate remains invalid, so forge verification inside tool execution is still blocked.
 - GitHub remote is configured and the foundation is committed locally; remote push is blocked by the same TLS issue plus stale machine-level GitHub CLI credentials.
 
 ## Last updated
 
-2026-10-22 — Phase 1 web scaffold verified; Foundry installation remains blocked by host TLS.
+2026-10-22 — Phase 1 scaffold complete; Phase 2 began with the first test-first escrow payment behavior.
