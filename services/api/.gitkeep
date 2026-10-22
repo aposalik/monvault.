@@ -1,0 +1,2 @@
+# Private off-chain service/data layer lives here.
+# It owns catalog, address, shipment references, and order metadata—never escrow custody.
