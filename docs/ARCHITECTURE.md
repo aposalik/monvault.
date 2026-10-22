@@ -22,7 +22,7 @@ User interactions     → Next.js web application
                 │                    │
                 ▼                    ▼
 ┌─────────────────────────┐  ┌───────────────────────────────┐
-│ Node.js API + Postgres   │  │ MonVaultEscrow.sol on Monad   │
+│ Seed data now; API later │  │ MonVaultEscrow.sol on Monad   │
 │                         │  │                               │
 │ products                │  │ order ID / buyer / seller     │
 │ cart/order metadata     │  │ exact escrowed MON amount     │
@@ -77,7 +77,7 @@ User interactions     → Next.js web application
 | Contract | Solidity + Foundry | Small, testable escrow contract |
 | API | Next.js route handlers initially | Fastest one-repo hackathon option |
 | Database | Supabase Postgres or local seeded JSON | Private metadata; use Supabase only if it helps the team |
-| Styling | Decide later | Design is deliberately deferred |
+| Styling | Tailwind CSS + documented design system | Tokens and behavior are defined in [`DESIGN.md`](../DESIGN.md). |
 
 ## Security boundaries
 
