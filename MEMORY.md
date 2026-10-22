@@ -63,7 +63,8 @@ Alternative path: `SHIPPED → DISPUTED`. A `SHIPPED` order with an expired revi
 - Root npm workspace, lockfile, public environment template, and seeded demo product exist.
 - Foundational rebrand and design system pushed to `origin/chore/monvault-rebrand-design`.
 - GitHub CLI authenticated; Fahad's F1–F6 issues created and assigned to `@MFahadFaisal`.
+- Root README was refreshed as the professional project entry point, using the approved monvault. lockup and documenting the actual implementation status and trust boundaries.
 
 ## Last updated
 
-2026-10-23 — `chore/monvault-rebrand-design` pushed to GitHub; Fahad's F1–F6 issues created and assigned; ready for PR/merge and Phase 3 testnet deployment (S2).
+2026-10-23 — Root README refreshed with the approved lockup, accurate architecture, status, setup, and demo guidance; ready for PR/merge and Phase 3 testnet deployment (S2).
