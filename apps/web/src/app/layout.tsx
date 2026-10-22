@@ -3,8 +3,13 @@ import type { ReactNode } from "react";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "ProofCart",
-  description: "Shopping payments protected by Monad escrow.",
+  applicationName: "monvault.",
+  title: {
+    default: "monvault. — Delivery-protected checkout on Monad",
+    template: "%s · monvault.",
+  },
+  description:
+    "A testnet ecommerce escrow demo that locks payment until delivery confirmation or the review timeout.",
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {

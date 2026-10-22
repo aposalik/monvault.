@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.28;
 
-import { ProofCartEscrow } from "../src/ProofCartEscrow.sol";
+import { MonVaultEscrow } from "../src/MonVaultEscrow.sol";
 
 interface Vm {
     function deal(address account, uint256 balance) external;
@@ -9,7 +9,7 @@ interface Vm {
 }
 
 contract UserActor {
-    function createOrder(ProofCartEscrow escrow, bytes32 orderRef, address seller)
+    function createOrder(MonVaultEscrow escrow, bytes32 orderRef, address seller)
         external
         payable
         returns (uint256 orderId)
@@ -17,19 +17,19 @@ contract UserActor {
         return escrow.createOrder{ value: msg.value }(orderRef, seller);
     }
 
-    function markShipped(ProofCartEscrow escrow, uint256 orderId) external {
+    function markShipped(MonVaultEscrow escrow, uint256 orderId) external {
         escrow.markShipped(orderId);
     }
 
-    function confirmDelivery(ProofCartEscrow escrow, uint256 orderId) external {
+    function confirmDelivery(MonVaultEscrow escrow, uint256 orderId) external {
         escrow.confirmDelivery(orderId);
     }
 
-    function openDispute(ProofCartEscrow escrow, uint256 orderId) external {
+    function openDispute(MonVaultEscrow escrow, uint256 orderId) external {
         escrow.openDispute(orderId);
     }
 
-    function claimAfterTimeout(ProofCartEscrow escrow, uint256 orderId) external {
+    function claimAfterTimeout(MonVaultEscrow escrow, uint256 orderId) external {
         escrow.claimAfterTimeout(orderId);
     }
 
@@ -37,13 +37,13 @@ contract UserActor {
 }
 
 contract ReentrantSeller {
-    ProofCartEscrow private _escrow;
+    MonVaultEscrow private _escrow;
     uint256 private _orderId;
     bool private _attack;
 
     bool public reentrySucceeded;
 
-    function configure(ProofCartEscrow escrow, uint256 orderId) external {
+    function configure(MonVaultEscrow escrow, uint256 orderId) external {
         _escrow = escrow;
         _orderId = orderId;
     }
@@ -60,25 +60,25 @@ contract ReentrantSeller {
 
     receive() external payable {
         if (_attack) {
-            (reentrySucceeded,) = address(_escrow)
-                .call(abi.encodeCall(ProofCartEscrow.claimAfterTimeout, (_orderId)));
+            (reentrySucceeded,) =
+                address(_escrow).call(abi.encodeCall(MonVaultEscrow.claimAfterTimeout, (_orderId)));
         }
     }
 }
 
-contract ProofCartEscrowTest {
+contract MonVaultEscrowTest {
     Vm private constant vm = Vm(address(uint160(uint256(keccak256("hevm cheat code")))));
 
     address private constant SELLER_ADDRESS = address(0xBEEF);
     bytes32 private constant ORDER_REF = keccak256("private-order-001");
 
-    ProofCartEscrow private escrow;
+    MonVaultEscrow private escrow;
     UserActor private buyer;
     UserActor private seller;
     UserActor private stranger;
 
     function setUp() public {
-        escrow = new ProofCartEscrow();
+        escrow = new MonVaultEscrow();
         buyer = new UserActor();
         seller = new UserActor();
         stranger = new UserActor();
@@ -108,7 +108,7 @@ contract ProofCartEscrowTest {
             address storedSeller,
             uint256 storedAmount,
             uint256 reviewEndsAt,
-            ProofCartEscrow.Status status
+            MonVaultEscrow.Status status
         ) = escrow.getOrder(firstOrderId);
 
         require(storedRef == ORDER_REF, "order reference should match");
@@ -116,7 +116,7 @@ contract ProofCartEscrowTest {
         require(storedSeller == SELLER_ADDRESS, "seller should match checkout seller");
         require(storedAmount == 1 ether, "amount should match deposited MON");
         require(reviewEndsAt == 0, "review timer should not start before shipping");
-        require(status == ProofCartEscrow.Status.PAID, "new order should be paid");
+        require(status == MonVaultEscrow.Status.PAID, "new order should be paid");
     }
 
     function testCreateOrderRejectsZeroPayment() public {
@@ -149,8 +149,8 @@ contract ProofCartEscrowTest {
 
         seller.markShipped(escrow, orderId);
 
-        (,,,, uint256 reviewEndsAt, ProofCartEscrow.Status status) = escrow.getOrder(orderId);
-        require(status == ProofCartEscrow.Status.SHIPPED, "order should be shipped");
+        (,,,, uint256 reviewEndsAt, MonVaultEscrow.Status status) = escrow.getOrder(orderId);
+        require(status == MonVaultEscrow.Status.SHIPPED, "order should be shipped");
         require(reviewEndsAt == block.timestamp + 5 minutes, "review window should be five minutes");
     }
 
@@ -179,8 +179,8 @@ contract ProofCartEscrowTest {
 
         buyer.confirmDelivery(escrow, orderId);
 
-        (,,,,, ProofCartEscrow.Status status) = escrow.getOrder(orderId);
-        require(status == ProofCartEscrow.Status.COMPLETED, "order should be completed");
+        (,,,,, MonVaultEscrow.Status status) = escrow.getOrder(orderId);
+        require(status == MonVaultEscrow.Status.COMPLETED, "order should be completed");
         require(address(escrow).balance == 0, "escrow should release payment");
         require(address(seller).balance == sellerBalanceBefore + 1 ether, "seller should be paid");
     }
@@ -208,8 +208,8 @@ contract ProofCartEscrowTest {
 
         buyer.openDispute(escrow, orderId);
 
-        (,,,,, ProofCartEscrow.Status status) = escrow.getOrder(orderId);
-        require(status == ProofCartEscrow.Status.DISPUTED, "paid order should become disputed");
+        (,,,,, MonVaultEscrow.Status status) = escrow.getOrder(orderId);
+        require(status == MonVaultEscrow.Status.DISPUTED, "paid order should become disputed");
         require(address(escrow).balance == 1 ether, "dispute should keep funds locked");
     }
 
@@ -241,8 +241,8 @@ contract ProofCartEscrowTest {
 
         seller.claimAfterTimeout(escrow, orderId);
 
-        (,,,,, ProofCartEscrow.Status status) = escrow.getOrder(orderId);
-        require(status == ProofCartEscrow.Status.COMPLETED, "claimed order should complete");
+        (,,,,, MonVaultEscrow.Status status) = escrow.getOrder(orderId);
+        require(status == MonVaultEscrow.Status.COMPLETED, "claimed order should complete");
         require(address(escrow).balance == 0, "escrow should release timeout payment");
         require(address(seller).balance == sellerBalanceBefore + 1 ether, "seller should be paid");
     }

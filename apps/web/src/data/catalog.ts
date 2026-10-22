@@ -12,8 +12,8 @@ export const demoProducts: DemoProduct[] = [
     id: "headphones-001",
     slug: "studio-headphones",
     name: "Studio Headphones",
-    description: "A demo product used to show ProofCart's delivery-protected checkout.",
+    description: "A demo product used to show monvault.'s delivery-protected checkout.",
     priceMon: "1",
-    sellerName: "ProofCart Demo Shop",
+    sellerName: "monvault. Demo Shop",
   },
 ];

@@ -1,5 +1,5 @@
 {
-  "task": "ProofCart Phase 2 escrow contract",
+  "task": "monvault. Phase 2 escrow contract",
   "completedSteps": [
     "Implemented validated order creation with unique hashed references and sequential IDs",
     "Implemented seller-only shipment transition and five-minute review deadline",
@@ -11,10 +11,10 @@
     "Verified 18 Foundry tests in the operator terminal",
     "Verified forge formatting and web lint/typecheck/build"
   ],
-  "nextStep": "Begin Phase 3: deploy ProofCartEscrow to Monad testnet and record explorer evidence",
+  "nextStep": "Begin Phase 3: deploy MonVaultEscrow to Monad testnet and record explorer evidence",
   "outputFiles": [
-    "contracts/src/ProofCartEscrow.sol",
-    "contracts/test/ProofCartEscrow.t.sol"
+    "contracts/src/MonVaultEscrow.sol",
+    "contracts/test/MonVaultEscrow.t.sol"
   ],
   "verificationNote": "The operator terminal reported 18 passing Foundry tests. OpenClaw tool execution verified forge formatting plus web lint, typecheck, and production build; its isolated environment still cannot access solc due egress certificate trust.",
   "updatedAt": "2026-10-22T17:35:00+03:00"

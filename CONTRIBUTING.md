@@ -1,6 +1,6 @@
-# Contributing to ProofCart
+# Contributing to monvault.
 
-ProofCart is being built by **Abdullah Salik** and **Fahad Faisal** for Monad Blitz Ankara.
+monvault. is being built by **Abdullah Salik** and **Fahad Faisal** for Monad Blitz Ankara.
 
 ## Branch workflow
 

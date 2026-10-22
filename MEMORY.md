@@ -1,10 +1,10 @@
-# ProofCart Working Memory
+# monvault. Working Memory
 
 This file is the concise, durable project memory. Update it after a meaningful decision, completed milestone, blocker, or change in scope.
 
 ## Current product definition
 
-ProofCart is a Monad-powered ecommerce escrow application. Buyers lock test MON in a smart contract during checkout. Sellers receive payment only when the buyer confirms delivery. A dispute locks funds; the MVP does not automate dispute resolution.
+monvault. is a Monad-powered ecommerce escrow application. Buyers lock test MON in a smart contract during checkout. Sellers receive payment only when the buyer confirms delivery. A dispute locks funds; the MVP does not automate dispute resolution.
 
 ## Engineering collaboration preference
 

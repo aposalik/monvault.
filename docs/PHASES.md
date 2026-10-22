@@ -1,12 +1,22 @@
-# ProofCart Delivery Phases
+# monvault. Delivery Phases
 
 ## Working principle
 
 Finish a small verified payment flow before visual polish or optional integrations. Every phase has an explicit acceptance check; do not call it done merely because a screen exists.
 
+## Ownership key
+
+- **Salik:** contract, wallet, chain state, testnet deployment, and transaction correctness.
+- **Fahad (proposed):** page UX, visual system, seeded commerce data, off-chain demo tracking, responsive/accessibility polish.
+- **Shared:** end-to-end integration, truthful product claims, and demo acceptance.
+
+The detailed work packages and boundaries are in [`TEAM-WORKFLOW.md`](TEAM-WORKFLOW.md). Fahad's assignments are a review draft; no GitHub issue should be created until Salik approves them.
+
 ---
 
 ## Phase 0 — Product foundation ✅
+
+**Owners:** Shared. Salik owns architecture/security boundaries; Fahad reviews customer flow and presentation implications.
 
 **Goal:** Establish the exact hackathon MVP and technical boundaries.
 
@@ -21,6 +31,8 @@ Finish a small verified payment flow before visual polish or optional integratio
 ---
 
 ## Phase 1 — Local project scaffold
+
+**Owners:** Salik owns the technical scaffold/toolchain; Fahad owns seeded content and verifies the frontend contribution workflow.
 
 **Goal:** Make the repository runnable before implementing features.
 
@@ -40,6 +52,8 @@ Finish a small verified payment flow before visual polish or optional integratio
 ---
 
 ## Phase 2 — Escrow contract and tests ✅
+
+**Owner:** Salik. Fahad consumes the normalized status/actions only after the interface handoff.
 
 **Goal:** Build the smallest secure contract that enforces the money rules.
 
@@ -71,6 +85,8 @@ SHIPPED + 5 minutes + no dispute → seller timeout claim → COMPLETED
 
 ## Phase 3 — Testnet deployment and proof
 
+**Owner:** Salik. Fahad presents explorer proof in the UI after deployment.
+
 **Goal:** Put the real contract on Monad testnet.
 
 **Tasks:**
@@ -87,6 +103,8 @@ SHIPPED + 5 minutes + no dispute → seller timeout claim → COMPLETED
 ---
 
 ## Phase 4 — Customer commerce flow
+
+**Owners:** Fahad owns page/component UX; Salik owns wallet, contract actions, receipt confirmation, and normalized chain state.
 
 **Goal:** Build the buyer-side experience around real contract state.
 
@@ -111,6 +129,8 @@ SHIPPED + 5 minutes + no dispute → seller timeout claim → COMPLETED
 
 ## Phase 5 — Seller shipping flow
 
+**Owners:** Fahad owns seller page UX and clearly labelled off-chain demo tracking; Salik owns seller authorization and `markShipped`/timeout contract actions.
+
 **Goal:** Connect professional seller operations to the same order.
 
 **Tasks:**
@@ -127,6 +147,8 @@ SHIPPED + 5 minutes + no dispute → seller timeout claim → COMPLETED
 
 ## Phase 6 — Completion, timeout, and dispute paths
 
+**Owners:** Salik verifies all three paths on-chain; Fahad owns the pending/success/error/dispute presentation. Both run acceptance.
+
 **Goal:** Prove every important final outcome.
 
 **Scenarios:**
@@ -140,6 +162,8 @@ SHIPPED + 5 minutes + no dispute → seller timeout claim → COMPLETED
 ---
 
 ## Phase 7 — Portfolio presentation and demo hardening
+
+**Owners:** Fahad leads visual, responsive, and accessibility polish; Salik validates architecture/security claims and technical proof. Both approve the demo freeze.
 
 **Goal:** Make the project understandable and reliable for a live audience.
 
@@ -157,7 +181,7 @@ SHIPPED + 5 minutes + no dispute → seller timeout claim → COMPLETED
 
 ## Completion definition
 
-ProofCart is hackathon-complete when:
+monvault. is hackathon-complete when:
 
 - Buyer and seller use separate testnet wallets.
 - Test MON is actually escrowed by the deployed Solidity contract.
