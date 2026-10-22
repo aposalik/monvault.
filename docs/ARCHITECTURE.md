@@ -1,4 +1,4 @@
-# ProofCart Architecture
+# monvault. Architecture
 
 ## Design rule
 
@@ -22,7 +22,7 @@ User interactions     → Next.js web application
                 │                    │
                 ▼                    ▼
 ┌─────────────────────────┐  ┌───────────────────────────────┐
-│ Node.js API + Postgres   │  │ ProofCartEscrow.sol on Monad   │
+│ Node.js API + Postgres   │  │ MonVaultEscrow.sol on Monad   │
 │                         │  │                               │
 │ products                │  │ order ID / buyer / seller     │
 │ cart/order metadata     │  │ exact escrowed MON amount     │

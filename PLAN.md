@@ -1,8 +1,8 @@
-# ProofCart Implementation Plan
+# monvault. Implementation Plan
 
 ## Product decision
 
-ProofCart is **not an Amazon clone**. It is a focused ecommerce escrow demo that proves one user journey:
+monvault. is **not an Amazon clone**. It is a focused ecommerce escrow demo that proves one user journey:
 
 > A buyer pays → Monad locks funds → seller ships → buyer confirms → seller receives payment.
 

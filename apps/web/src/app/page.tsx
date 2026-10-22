@@ -1,69 +1,149 @@
 import Image from "next/image";
 
+const flow = [
+  {
+    label: "01 / PAY",
+    title: "Buyer locks test MON",
+    body: "The order begins only after the escrow transaction is confirmed.",
+  },
+  {
+    label: "02 / SHIP",
+    title: "Seller ships with proof of funds",
+    body: "Payment stays in the contract while the order is in transit.",
+  },
+  {
+    label: "03 / RELEASE",
+    title: "Rules decide the next move",
+    body: "Confirm delivery, open a dispute, or let the review window expire.",
+  },
+];
+
 export default function Home() {
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert h-5 w-[100px]"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the{" "}
-            <code className="rounded bg-black/[.06] px-1.5 py-0.5 font-mono text-[0.9em] dark:bg-white/[.08]">
-              page.tsx
-            </code>{" "}
-            file.
+    <main className="min-h-screen overflow-hidden bg-background text-foreground">
+      <header className="mx-auto flex w-full max-w-[1440px] items-center justify-between px-5 py-5 md:px-10 lg:px-[72px]">
+        <a
+          className="flex items-center gap-3 rounded-xl font-semibold tracking-[-0.04em]"
+          href="#top"
+          aria-label="monvault. home"
+        >
+          <Image
+            src="/brand/monvault-mark.png"
+            alt=""
+            width={44}
+            height={44}
+            priority
+            className="size-11 rounded-xl object-cover"
+          />
+          <span className="text-xl">monvault.</span>
+        </a>
+        <span className="rounded-full border border-line bg-surface px-3 py-2 font-mono text-[11px] font-medium tracking-[0.08em] text-[var(--ink-600)]">
+          MONAD TESTNET
+        </span>
+      </header>
+
+      <section
+        id="top"
+        className="mx-auto grid min-h-[calc(100vh-84px)] w-full max-w-[1440px] items-center gap-16 px-5 pb-24 pt-16 md:px-10 lg:grid-cols-[1.12fr_0.88fr] lg:px-[72px] lg:py-24"
+      >
+        <div>
+          <p className="mb-6 font-mono text-xs font-semibold tracking-[0.1em] text-[var(--violet-700)]">
+            DELIVERY-PROTECTED CHECKOUT
+          </p>
+          <h1 className="max-w-[900px] text-[clamp(3.4rem,7.3vw,7.8rem)] font-semibold leading-[0.9] tracking-[-0.065em]">
+            Buy with confidence. Pay when delivery is confirmed.
           </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
+          <p className="mt-8 max-w-2xl text-lg leading-8 text-[var(--ink-600)] md:text-xl">
+            monvault. locks test MON in a public escrow contract, giving buyers
+            a review window and sellers visible proof of committed funds.
+          </p>
+          <div className="mt-10 flex flex-col gap-3 sm:flex-row">
             <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
+              href="#how-it-works"
+              className="inline-flex min-h-12 items-center justify-center rounded-xl bg-violet px-6 py-3 font-semibold text-white transition-transform hover:-translate-y-0.5"
             >
-              Templates
-            </a>{" "}
-            or the{" "}
+              See how escrow works
+            </a>
             <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
+              href="https://github.com/aposalik/ProofCart"
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex min-h-12 items-center justify-center rounded-xl border border-[var(--ink-950)] bg-transparent px-6 py-3 font-semibold transition-colors hover:bg-[var(--surface-muted)]"
             >
-              Learning
-            </a>{" "}
-            center.
+              View source
+            </a>
+          </div>
+          <p className="mt-5 max-w-xl text-sm leading-6 text-[var(--ink-600)]">
+            Testnet prototype. Physical delivery is confirmed by the buyer;
+            the contract does not independently verify a package.
           </p>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert h-[14px] w-4"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+
+        <div
+          className="relative mx-auto aspect-square w-full max-w-[560px]"
+          role="img"
+          aria-label="A dimensional escrow vault showing test MON held between buyer payment and seller release"
+        >
+          <div className="absolute inset-[8%] rotate-3 rounded-[32%] border border-[var(--lilac-300)] bg-[var(--lilac-150)] shadow-[0_40px_100px_rgba(52,30,120,0.18)]" />
+          <div className="absolute inset-[17%] -rotate-6 rounded-[28%] border border-[var(--violet-500)] bg-[var(--violet-600)] shadow-[18px_24px_0_var(--night-950)]" />
+          <div className="absolute inset-[31%] grid place-items-center rounded-full border-[12px] border-[var(--surface-raised)] bg-[var(--night-950)] text-center text-white shadow-[0_0_0_2px_var(--night-950)]">
+            <div>
+              <p className="font-mono text-[10px] tracking-[0.12em] text-[var(--lilac-300)] sm:text-xs">
+                ESCROW STATE
+              </p>
+              <p className="mt-2 text-xl font-semibold tracking-[-0.04em] sm:text-3xl">
+                FUNDS
+                <br />
+                SECURED
+              </p>
+            </div>
+          </div>
+          <span className="absolute left-0 top-[20%] rounded-full border border-line bg-surface px-3 py-2 font-mono text-[10px] tracking-[0.08em] shadow-lg sm:text-xs">
+            BUYER PAID
+          </span>
+          <span className="absolute bottom-[15%] right-0 rounded-full border border-line bg-surface px-3 py-2 font-mono text-[10px] tracking-[0.08em] shadow-lg sm:text-xs">
+            RELEASE BY RULE
+          </span>
         </div>
-      </main>
-    </div>
+      </section>
+
+      <section
+        id="how-it-works"
+        className="border-y border-line bg-surface px-5 py-24 md:px-10 lg:px-[72px] lg:py-36"
+      >
+        <div className="mx-auto w-full max-w-[1296px]">
+          <div className="mb-14 flex flex-col justify-between gap-5 md:flex-row md:items-end">
+            <div>
+              <p className="font-mono text-xs font-semibold tracking-[0.1em] text-[var(--violet-700)]">
+                ONE ORDER / PUBLIC RULES
+              </p>
+              <h2 className="mt-4 max-w-3xl text-4xl font-semibold tracking-[-0.05em] md:text-6xl">
+                A payment flow both sides can verify.
+              </h2>
+            </div>
+            <p className="max-w-md text-base leading-7 text-[var(--ink-600)]">
+              The interface explains each state in plain language, then links
+              to the transaction evidence behind it.
+            </p>
+          </div>
+
+          <ol className="grid gap-px overflow-hidden rounded-3xl border border-line bg-line lg:grid-cols-3">
+            {flow.map((step) => (
+              <li key={step.label} className="min-h-64 bg-surface p-8 md:p-10">
+                <p className="font-mono text-xs font-semibold tracking-[0.1em] text-[var(--violet-700)]">
+                  {step.label}
+                </p>
+                <h3 className="mt-12 text-2xl font-semibold tracking-[-0.035em]">
+                  {step.title}
+                </h3>
+                <p className="mt-4 leading-7 text-[var(--ink-600)]">
+                  {step.body}
+                </p>
+              </li>
+            ))}
+          </ol>
+        </div>
+      </section>
+    </main>
   );
 }

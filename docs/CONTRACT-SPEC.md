@@ -1,8 +1,8 @@
-# ProofCart Escrow Contract Specification
+# monvault. Escrow Contract Specification
 
 ## Goal
 
-`ProofCartEscrow` holds native test MON for one order and releases it only when the buyer confirms delivery.
+`MonVaultEscrow` holds native test MON for one order and releases it only when the buyer confirms delivery.
 
 ## Minimal order shape
 
@@ -72,4 +72,4 @@ These are intentional scope choices, not missing work.
 
 ## Implementation status
 
-Implemented in `contracts/src/ProofCartEscrow.sol`. The 18-test suite covers creation, unique references, seller shipment authorization, the five-minute boundary, buyer confirmation, disputes, timeout claims, exact payouts, unauthorized callers, invalid state transitions, and a reentrant timeout-claim attempt.
+Implemented in `contracts/src/MonVaultEscrow.sol`. The 18-test suite covers creation, unique references, seller shipment authorization, the five-minute boundary, buyer confirmation, disputes, timeout claims, exact payouts, unauthorized callers, invalid state transitions, and a reentrant timeout-claim attempt.

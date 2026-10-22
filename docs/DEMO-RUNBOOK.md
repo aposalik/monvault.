@@ -1,4 +1,4 @@
-# ProofCart Demo Runbook
+# monvault. Demo Runbook
 
 ## Demo preparation
 
@@ -26,6 +26,6 @@
 
 ## Truthful claims
 
-Say: "ProofCart protects payment until buyer confirmation."
+Say: "monvault. protects payment until buyer confirmation."
 
-Do not say: "ProofCart proves physical delivery." Physical delivery requires buyer confirmation, tracking evidence, or future dispute review.
+Do not say: "monvault. proves physical delivery." Physical delivery requires buyer confirmation, tracking evidence, or future dispute review.

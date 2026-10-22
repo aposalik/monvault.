@@ -1,10 +1,10 @@
-# ProofCart
+# monvault.
 
 > A shopping checkout where payment is held in Monad escrow until the buyer confirms delivery.
 
 ## The product
 
-ProofCart is a hackathon prototype for safer online shopping. A buyer pays with test MON, but the seller cannot access the payment immediately. The **ProofCart smart contract** holds it in escrow until delivery is confirmed.
+monvault. is a hackathon prototype for safer online shopping. A buyer pays with test MON, but the seller cannot access the payment immediately. The **monvault. smart contract** holds it in escrow until delivery is confirmed.
 
 ```text
 Shop → Checkout → MON escrow → Seller ships → Buyer confirms or review expires → Seller is paid
@@ -16,7 +16,7 @@ If there is a problem, the buyer can open a dispute during the five-minute demo 
 
 In a normal marketplace, a buyer must trust the seller/platform after paying. If a physical product does not arrive, refunds are slow and depend on a central platform.
 
-ProofCart makes the payment rule transparent:
+monvault. makes the payment rule transparent:
 
 - Buyer funds are held by a contract, not the frontend or API.
 - Seller is paid only after buyer confirmation.
@@ -71,6 +71,8 @@ See [`docs/TEAM-WORKFLOW.md`](docs/TEAM-WORKFLOW.md) and [`CONTRIBUTING.md`](CON
 ## Start here
 
 1. Read [`PLAN.md`](PLAN.md).
-2. Read [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
-3. Read [`docs/CONTRACT-SPEC.md`](docs/CONTRACT-SPEC.md) before changing escrow behavior.
-4. Keep [`MEMORY.md`](MEMORY.md) and [`MISTAKES.md`](MISTAKES.md) current while building.
+2. Use [`DESIGN.md`](DESIGN.md) as the visual and interaction source of truth.
+3. Read [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
+4. Read [`docs/CONTRACT-SPEC.md`](docs/CONTRACT-SPEC.md) before changing escrow behavior.
+5. Review [`docs/PHASES.md`](docs/PHASES.md) and [`docs/TEAM-WORKFLOW.md`](docs/TEAM-WORKFLOW.md) before assigning work.
+6. Keep [`MEMORY.md`](MEMORY.md) and [`MISTAKES.md`](MISTAKES.md) current while building.
