@@ -6,6 +6,10 @@ This file is the concise, durable project memory. Update it after a meaningful d
 
 ProofCart is a Monad-powered ecommerce escrow application. Buyers lock test MON in a smart contract during checkout. Sellers receive payment only when the buyer confirms delivery. A dispute locks funds; the MVP does not automate dispute resolution.
 
+## Engineering collaboration preference
+
+Salik wants to understand and review every meaningful change. Work in small slices and explain the component flow, design reasoning, tradeoffs, changed files, tests, and evidence. AI should support engineering judgment, never replace it with opaque "vibe coding."
+
 ## Non-negotiable boundaries
 
 - Monad contract owns escrow funds and state transitions.

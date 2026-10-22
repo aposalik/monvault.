@@ -6,6 +6,12 @@ Before coding, read `README.md`, `PLAN.md`, `MEMORY.md`, and `docs/CONTRACT-SPEC
 
 ## Working rules
 
+- Treat Salik as the engineer and reviewer, not a passive recipient of generated code.
+- Before each meaningful implementation slice, explain the goal, affected components, data/control flow, and design choice in concise engineering language.
+- After each slice, report the exact files changed, behavior added, tests run, observed results, and remaining risks.
+- Explain new Solidity/EVM/Next.js concepts when they first appear; do not over-explain syntax Salik already understands.
+- Keep changes small enough to review. Never hide generated complexity behind "it works" or substitute code volume for understanding.
+- Record important alternatives and why one was selected, especially for money movement and security boundaries.
 - Update `MEMORY.md` after important decisions or completed milestones.
 - Update `MISTAKES.md` after a concrete failure or recovery lesson.
 - Keep the smart contract small; every function must have a clear user story and test.
