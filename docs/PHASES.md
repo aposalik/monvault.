@@ -26,11 +26,14 @@ Finish a small verified payment flow before visual polish or optional integratio
 
 **Tasks:**
 
-1. Initialize `apps/web` as a Next.js + TypeScript app.
-2. Initialize `contracts` as a Foundry project.
-3. Add shared environment examples; never add real keys.
-4. Add formatting, typecheck, and test commands.
-5. Add a simple seeded product catalog and seller identity.
+1. [x] Initialize `apps/web` as a Next.js + TypeScript app.
+2. [x] Create the `contracts` Foundry directory/configuration structure.
+3. [x] Add shared environment examples; never add real keys.
+4. [x] Add lint, typecheck, build, and contract-test commands.
+5. [x] Add a simple seeded product catalog and seller identity placeholder.
+6. [ ] Install the Foundry binary and run `forge test` once the host TLS trust chain is repaired.
+
+**Current verification:** Web lint, TypeScript, and production build pass. Foundry installation is blocked by an expired host egress certificate; TLS verification was not disabled.
 
 **Exit check:** Web app runs locally; `forge test`, typecheck, and production build run successfully.
 

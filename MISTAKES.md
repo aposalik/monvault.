@@ -16,4 +16,9 @@ Record concrete mistakes, near-misses, and recoveries here. Update this file whe
 
 ## Incident log
 
-_No incidents yet. Add date, what happened, impact, cause, fix, and prevention when one occurs._
+### 2026-10-22 — Host TLS certificate blocked package and Git tooling
+
+- **What happened:** GitHub HTTPS, Homebrew, and npm registry requests failed because the injected local certificate was expired or untrusted.
+- **Impact:** The GitHub push and Foundry installation could not complete. Next.js dependency installation initially stalled.
+- **Recovery:** Kept TLS verification enabled, stopped hung installers, and completed npm installation from the existing verified local cache with `npm install --offline`.
+- **Prevention:** Diagnose network trust before long installs; never work around it by disabling certificate verification. Foundry remains pending until the host trust chain is repaired.

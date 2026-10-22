@@ -51,6 +51,13 @@ Alternative path: `SHIPPED → DISPUTED`. A `SHIPPED` order with an expired revi
 - Confirm Fahad's GitHub username and add him with Write access.
 - Confirm the organizer's currently recommended testnet faucet/RPC at the event.
 
+## Current implementation state
+
+- Next.js 16 + TypeScript web workspace is scaffolded and passes lint, typecheck, and production build.
+- Root npm workspace, lockfile, public environment template, and seeded demo product exist.
+- Foundry project structure and configuration exist, but the Foundry binary installation is blocked by the host's expired TLS trust certificate.
+- GitHub remote is configured and the foundation is committed locally; remote push is blocked by the same TLS issue plus stale machine-level GitHub CLI credentials.
+
 ## Last updated
 
-2026-10-22 — Escrow timeout, wallet, testnet, tracking, and dispute decisions accepted.
+2026-10-22 — Phase 1 web scaffold verified; Foundry installation remains blocked by host TLS.
