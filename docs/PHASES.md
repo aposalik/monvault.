@@ -39,7 +39,7 @@ Finish a small verified payment flow before visual polish or optional integratio
 
 ---
 
-## Phase 2 — Escrow contract and tests
+## Phase 2 — Escrow contract and tests ✅
 
 **Goal:** Build the smallest secure contract that enforces the money rules.
 
@@ -64,6 +64,8 @@ SHIPPED + 5 minutes + no dispute → seller timeout claim → COMPLETED
 ```
 
 **Exit check:** All authorization, wrong-state, timeout, dispute, payout, and reentrancy tests pass locally.
+
+**Verification:** 18 Foundry tests passed in the operator terminal. `forge fmt --check` passed in OpenClaw tool execution. The web lint, typecheck, and production build also remained green.
 
 ---
 

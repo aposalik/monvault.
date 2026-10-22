@@ -57,12 +57,15 @@ Alternative path: `SHIPPED → DISPUTED`. A `SHIPPED` order with an expired revi
 
 ## Current implementation state
 
+- Phase 2 escrow contract is implemented with create, ship, confirm, dispute, and five-minute timeout-claim transitions.
+- The contract uses unique hashed order references, explicit buyer/seller authorization, checks-effects-interactions, and a reentrancy guard for payouts.
+- 18 Foundry tests passed in the operator terminal; OpenClaw independently verified Solidity formatting and kept web lint/typecheck/build green.
 - Next.js 16 + TypeScript web workspace is scaffolded and passes lint, typecheck, and production build.
 - Root npm workspace, lockfile, public environment template, and seeded demo product exist.
-- Foundry/Anvil 1.8.6 are installed under `~/.foundry/bin`; the initial payment-lock test completed a user-verified red/green cycle in the operator's normal terminal.
+- Foundry/Anvil 1.8.6 are installed under `~/.foundry/bin`.
 - OpenClaw's isolated command environment still cannot download or see solc 0.8.28 because its egress trust certificate remains invalid, so forge verification inside tool execution is still blocked.
 - GitHub remote is configured and the foundation is committed locally; remote push is blocked by the same TLS issue plus stale machine-level GitHub CLI credentials.
 
 ## Last updated
 
-2026-10-22 — Phase 1 scaffold complete; Phase 2 began with the first test-first escrow payment behavior.
+2026-10-22 — Phase 2 escrow implementation completed with 18 passing Foundry tests; testnet deployment is next.

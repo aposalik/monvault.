@@ -7,10 +7,10 @@
 ProofCart is a hackathon prototype for safer online shopping. A buyer pays with test MON, but the seller cannot access the payment immediately. The **ProofCart smart contract** holds it in escrow until delivery is confirmed.
 
 ```text
-Shop → Checkout → MON escrow → Seller ships → Buyer confirms → Seller is paid
+Shop → Checkout → MON escrow → Seller ships → Buyer confirms or review expires → Seller is paid
 ```
 
-If there is a problem, the buyer can open a dispute. The funds remain locked rather than being automatically sent to either party.
+If there is a problem, the buyer can open a dispute during the five-minute demo review window. The funds remain locked. If the buyer neither confirms nor disputes before the deadline, the seller may claim the payment.
 
 ## The problem
 

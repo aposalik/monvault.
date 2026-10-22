@@ -10,6 +10,7 @@
 enum Status { NONE, PAID, SHIPPED, COMPLETED, DISPUTED }
 
 struct Order {
+    bytes32 orderRef;
     address buyer;
     address seller;
     uint256 amount;
@@ -34,9 +35,9 @@ The product ID, customer address, and shipping tracking data remain off-chain. A
 ## Events
 
 ```solidity
-event OrderPaid(uint256 indexed orderId, address indexed buyer, address indexed seller, uint256 amount);
-event OrderShipped(uint256 indexed orderId, address indexed seller);
-event DeliveryConfirmed(uint256 indexed orderId);
+event OrderPaid(uint256 indexed orderId, bytes32 indexed orderRef, address indexed buyer, address seller, uint256 amount);
+event OrderShipped(uint256 indexed orderId, address indexed seller, uint256 reviewEndsAt);
+event DeliveryConfirmed(uint256 indexed orderId, address indexed buyer);
 event SellerClaimedAfterTimeout(uint256 indexed orderId, address indexed seller);
 event DisputeOpened(uint256 indexed orderId, address indexed buyer);
 ```
@@ -65,5 +66,10 @@ For the MVP, do not put delivery addresses, tracking references, customer detail
 - No ERC-20 / stablecoin support initially.
 - No multi-item cart in one escrow call.
 - Testnet only.
+- Seller wallets must be able to receive native MON. A contract seller that deliberately rejects native transfers cannot complete payout in this MVP.
 
 These are intentional scope choices, not missing work.
+
+## Implementation status
+
+Implemented in `contracts/src/ProofCartEscrow.sol`. The 18-test suite covers creation, unique references, seller shipment authorization, the five-minute boundary, buyer confirmation, disputes, timeout claims, exact payouts, unauthorized callers, invalid state transitions, and a reentrant timeout-claim attempt.
