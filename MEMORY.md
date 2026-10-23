@@ -64,7 +64,13 @@ Alternative path: `SHIPPED → DISPUTED`. A `SHIPPED` order with an expired revi
 - Foundational rebrand and design system pushed to `origin/chore/monvault-rebrand-design`.
 - GitHub CLI authenticated; Fahad's F1–F6 issues created and assigned to `@MFahadFaisal`.
 - Root README was refreshed as the professional project entry point, using the approved monvault. lockup and documenting the actual implementation status and trust boundaries.
+- Work package F1 (Design system primitives, original dimensional escrow vault scene, interactive contract state inspector, architecture visual, and full 9-section portfolio homepage) is implemented and passes lint, typecheck, and production build.
+- Work package F2 (Shop, Product detail, and Cart experience with 3 seeded products, SVG media, one-seller boundary, test MON labels, loading/empty/not-found states) is implemented and passes lint, typecheck, and static production build.
+- Work package F3 (Checkout presentation layer at `/checkout` with public-vs-private data boundary, pre-signature wallet confirmation panel, duplicate-click lock, transaction proof with explorer link, and all 8 wallet/receipt states) is implemented and verified.
+- Work package F4 (Buyer order tracking experience at `/orders/[id]` with normalized `presentation.ts` status/timeline/countdown helpers, 5-step escrow timeline, zero-layout-shift 5-minute countdown, first-class Confirm Delivery and Open Dispute confirmation panels, transaction proof ledger, and all 9 contract/wallet states) is implemented and verified.
+- Work package F5 (Seller orders and demo shipment UX at `/seller/orders` with off-chain demo tracking storage synced to buyer tracking, seller wallet authorization gates, `markShipped` and `claimAfterTimeout` flows, strict payout eligibility gating, and all 8 operational states) is implemented and verified.
+- Work package F6 (Cross-route responsive 320px/200%-zoom QA, keyboard skip-link + focus-visible + 44×44px target QA, `prefers-reduced-motion` and `prefers-contrast: more` rules, Inter font preloading, global 404 route, and toggleable 60-second demo runbook bar across all routes) is implemented and verified.
 
 ## Last updated
 
-2026-10-23 — Root README refreshed with the approved lockup, accurate architecture, status, setup, and demo guidance; ready for PR/merge and Phase 3 testnet deployment (S2).
+2026-10-23 — Completed F6 (Responsive, Accessibility, and Demo Polish across all implemented routes). All Fahad frontend work packages (F1–F6) are complete, verified with lint/typecheck/build, and ready for Salik's S1–S4 chain integration and final demo rehearsal.
