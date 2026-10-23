@@ -18,6 +18,7 @@
   <a href="#architecture">Architecture</a> ·
   <a href="#design-system">Design</a> ·
   <a href="#getting-started">Getting started</a> ·
+  <a href="docs/TESTNET-PROOF.md">Testnet proof</a> ·
   <a href="docs/DEMO-RUNBOOK.md">Demo runbook</a>
 </p>
 
@@ -163,7 +164,7 @@ The visual direction is **“a transaction you can see.”** It turns the escrow
 | Wallet integration | Planned | `viem`/`wagmi` integration begins with checkout. |
 | Commerce + seller flows | Planned | Shop, checkout, tracking, and seller operations follow the shared interface handoff. |
 
-See [`docs/PHASES.md`](docs/PHASES.md) for delivery acceptance and [`docs/TEAM-WORKFLOW.md`](docs/TEAM-WORKFLOW.md) for ownership boundaries.
+See [`docs/TESTNET-PROOF.md`](docs/TESTNET-PROOF.md) for public deployment evidence, [`docs/PHASES.md`](docs/PHASES.md) for delivery acceptance, and [`docs/TEAM-WORKFLOW.md`](docs/TEAM-WORKFLOW.md) for ownership boundaries.
 
 ## Repository layout
 

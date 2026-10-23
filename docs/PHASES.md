@@ -98,6 +98,14 @@ SHIPPED + 5 minutes + no dispute → seller timeout claim → COMPLETED
 5. Verify source on the supported explorer, if available.
 6. Save the public address in app configuration.
 
+### Current Phase 3 record
+
+- `MonVaultEscrow` is deployed at `0xc48545Be217840A472C6d5BA1282A15BDaA54767` on chain ID `10143`.
+- Deployment transaction: `0x7f5d7d5d379c21ddd746ce356a70a3ebfad56293b22af0f0e47db7b626a845a3`.
+- Deployment receipt, chain ID, `REVIEW_WINDOW()`, runtime bytecode, and creation input were independently checked against the local artifact.
+- Disposable buyer and seller roles are recorded in [`TESTNET-PROOF.md`](TESTNET-PROOF.md).
+- The buyer-funded paid-order proof remains pending faucet funding and a MetaMask-confirmed `createOrder` transaction.
+
 **Exit check:** A direct contract call creates a paid order, and its transaction is visible in an explorer.
 
 ---
