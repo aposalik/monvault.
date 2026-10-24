@@ -118,6 +118,8 @@ SHIPPED + 5 minutes + no dispute → seller timeout claim → COMPLETED
 
 **Goal:** Build the buyer-side experience around real contract state.
 
+**Implementation:** Salik’s typed wallet/chain foundation is active on `salik/s3-wallet-chain-foundation`. Follow [`PHASE-4-IMPLEMENTATION.md`](PHASE-4-IMPLEMENTATION.md) for the process and [`PHASE-4-HANDOFF.md`](PHASE-4-HANDOFF.md) for the interface Fahad consumes.
+
 **Pages:**
 
 - `/` — portfolio homepage
