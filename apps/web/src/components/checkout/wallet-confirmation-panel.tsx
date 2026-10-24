@@ -17,6 +17,8 @@ import type {
 
 export interface WalletConfirmationPanelProps {
   product: DemoProduct;
+  totalAmountMon: string;
+  itemCount: number;
   opaqueOrderRef: `0x${string}`;
   buyerAddress?: `0x${string}`;
   walletStatus: CheckoutWalletStatus;
@@ -25,11 +27,12 @@ export interface WalletConfirmationPanelProps {
   onConnectWallet: () => void;
   onSwitchNetwork: () => void;
   onSubmitOrder: () => Promise<void>;
-  onResetAction: () => void;
 }
 
 export function WalletConfirmationPanel({
   product,
+  totalAmountMon,
+  itemCount,
   opaqueOrderRef,
   buyerAddress = "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
   walletStatus,
@@ -38,7 +41,6 @@ export function WalletConfirmationPanel({
   onConnectWallet,
   onSwitchNetwork,
   onSubmitOrder,
-  onResetAction,
 }: WalletConfirmationPanelProps) {
   const submissionLockRef = useRef(false);
 
@@ -64,20 +66,20 @@ export function WalletConfirmationPanel({
       {/* Top status bar */}
       <div className="flex flex-wrap items-center justify-between gap-2 border-b border-line pb-4">
         <span className="font-mono text-xs font-semibold uppercase tracking-[0.08em] text-violet-700">
-          STEP 02 · WALLET CONFIRMATION PANEL
+          STEP 02 · ESCROW SETTLEMENT
         </span>
         {walletStatus === "disconnected" ? (
           <StatusChip label="WALLET DISCONNECTED" tone="neutral" />
         ) : walletStatus === "wrong-network" ? (
           <StatusChip label="WRONG NETWORK" tone="warning" />
         ) : isConfirmed ? (
-          <StatusChip label="FUNDS SECURED" tone="success" />
+          <StatusChip label="FUNDS LOCKED IN ESCROW" tone="success" />
         ) : (
-          <StatusChip label="MONAD TESTNET" tone="violet" />
+          <StatusChip label="MONAD ESCROW READY" tone="violet" />
         )}
       </div>
 
-      {/* Pre-signature transparency summary required by DESIGN.md section 8 */}
+      {/* Pre-signature transparency summary */}
       <div className="mt-5">
         <h2 className="text-2xl font-semibold tracking-[-0.03em] text-ink-950">
           Lock payment in{" "}
@@ -86,18 +88,18 @@ export function WalletConfirmationPanel({
           </code>
         </h2>
 
-        {/* Required checkout copy from docs/PRODUCT-SPEC.md */}
         <p className="mt-3 rounded-[14px] border border-lilac-300 bg-lilac-150/60 p-4 text-sm leading-6 text-ink-950">
-          Your funds are locked in Monad escrow. Confirm delivery to pay the
-          seller now, or open a dispute within five minutes. Otherwise the
-          seller may claim payment after the review period.
+          Your funds are locked in Monad escrow—not sent directly to the
+          merchant. Once your order arrives, confirm delivery on{" "}
+          <code className="font-mono text-xs">/track</code> to release payment
+          or open a dispute within the review window.
         </p>
 
         {/* Public on-chain parameters table */}
         <dl className="mt-5 space-y-3 border-y border-line py-4 text-xs">
           <div className="flex items-center justify-between gap-2">
             <dt className="font-mono uppercase tracking-[0.08em] text-ink-600">
-              CONTRACT ACTION
+              SMART CONTRACT CALL
             </dt>
             <dd className="font-mono font-semibold text-violet-700">
               createOrder(orderRef, seller)
@@ -106,20 +108,25 @@ export function WalletConfirmationPanel({
 
           <div className="flex items-center justify-between gap-2">
             <dt className="font-mono uppercase tracking-[0.08em] text-ink-600">
-              VALUE TO LOCK (MSG.VALUE)
+              ITEMS IN ORDER
             </dt>
-            <dd>
-              <MonAmount
-                amount={product.priceMon}
-                size="sm"
-                showTestnetTag={false}
-              />
+            <dd className="font-mono font-semibold text-ink-950">
+              {itemCount} {itemCount === 1 ? "item" : "items"}
             </dd>
           </div>
 
           <div className="flex items-center justify-between gap-2">
             <dt className="font-mono uppercase tracking-[0.08em] text-ink-600">
-              SELLER RECIPIENT
+              ESCROW AMOUNT (MSG.VALUE)
+            </dt>
+            <dd>
+              <MonAmount amount={totalAmountMon} size="sm" />
+            </dd>
+          </div>
+
+          <div className="flex items-center justify-between gap-2">
+            <dt className="font-mono uppercase tracking-[0.08em] text-ink-600">
+              MERCHANT RECIPIENT
             </dt>
             <dd className="text-right">
               <span className="block font-medium text-ink-950">
@@ -136,7 +143,7 @@ export function WalletConfirmationPanel({
 
           <div className="flex items-center justify-between gap-2">
             <dt className="font-mono uppercase tracking-[0.08em] text-ink-600">
-              BUYER SIGNER
+              BUYER WALLET
             </dt>
             <dd>
               <code
@@ -144,7 +151,7 @@ export function WalletConfirmationPanel({
                 className="font-mono text-[11px] text-ink-950"
               >
                 {walletStatus === "disconnected"
-                  ? "Connect disposable wallet"
+                  ? "Not connected"
                   : truncateHex(buyerAddress, 8, 6)}
               </code>
             </dd>
@@ -152,7 +159,7 @@ export function WalletConfirmationPanel({
 
           <div className="flex items-center justify-between gap-2">
             <dt className="font-mono uppercase tracking-[0.08em] text-ink-600">
-              OPAQUE ORDER REF (HASH)
+              ORDER REFERENCE HASH
             </dt>
             <dd>
               <code
@@ -163,33 +170,6 @@ export function WalletConfirmationPanel({
               </code>
             </dd>
           </div>
-
-          <div className="flex items-center justify-between gap-2">
-            <dt className="font-mono uppercase tracking-[0.08em] text-ink-600">
-              NETWORK
-            </dt>
-            <dd className="font-mono font-semibold text-ink-950">
-              MONAD TESTNET
-            </dd>
-          </div>
-
-          <div className="flex items-center justify-between gap-2">
-            <dt className="font-mono uppercase tracking-[0.08em] text-ink-600">
-              CONTRACT STATE CHANGE
-            </dt>
-            <dd className="font-mono font-semibold text-ink-950">
-              NONE → PAID (Escrow Active)
-            </dd>
-          </div>
-
-          <div className="flex items-center justify-between gap-2">
-            <dt className="font-mono uppercase tracking-[0.08em] text-ink-600">
-              DISPUTE / CLAIM ELIGIBILITY
-            </dt>
-            <dd className="text-right text-ink-800">
-              Buyer can confirm or dispute; seller cannot withdraw early
-            </dd>
-          </div>
         </dl>
       </div>
 
@@ -198,11 +178,11 @@ export function WalletConfirmationPanel({
         {walletStatus === "disconnected" ? (
           <div className="space-y-3 rounded-[14px] border border-line bg-canvas p-4">
             <p className="text-sm font-semibold text-ink-950">
-              Connect a disposable buyer wallet to continue
+              Connect your Web3 wallet to continue
             </p>
             <p className="text-xs leading-5 text-ink-600">
-              Use a separate test wallet from the seller account so you can
-              verify buyer confirmation and seller shipment independently.
+              Connect MetaMask or any compatible Monad wallet to sign the escrow
+              deposit transaction.
             </p>
             <Button
               variant="primary"
@@ -210,7 +190,7 @@ export function WalletConfirmationPanel({
               onClick={onConnectWallet}
               className="w-full"
             >
-              Connect disposable MetaMask wallet
+              Connect Wallet
             </Button>
           </div>
         ) : walletStatus === "wrong-network" ? (
@@ -219,14 +199,10 @@ export function WalletConfirmationPanel({
               <span className="font-mono text-xs font-semibold uppercase tracking-[0.08em] text-warning-700">
                 NETWORK MISMATCH
               </span>
-              <StatusChip label="SWITCH REQUIRED" tone="warning" />
+              <StatusChip label="SWITCH NETWORK" tone="warning" />
             </div>
             <p className="text-sm font-semibold text-ink-950">
-              Your wallet is not connected to Monad Testnet.
-            </p>
-            <p className="text-xs leading-5 text-ink-800">
-              No funds have moved. Switch your wallet network to Monad Testnet
-              before calling <code className="font-mono">createOrder</code>.
+              Please switch your wallet to Monad Testnet.
             </p>
             <Button
               variant="primary"
@@ -234,7 +210,7 @@ export function WalletConfirmationPanel({
               onClick={onSwitchNetwork}
               className="w-full"
             >
-              Switch wallet to Monad Testnet
+              Switch to Monad Testnet
             </Button>
           </div>
         ) : (
@@ -250,15 +226,14 @@ export function WalletConfirmationPanel({
                 </div>
                 <p className="mt-2 text-sm font-semibold text-ink-950">
                   Review and sign <code className="font-mono">createOrder</code>{" "}
-                  in your wallet extension.
+                  in your wallet.
                 </p>
                 <p className="mt-1 text-xs leading-5 text-ink-800">
-                  Verify the exact deposit of{" "}
+                  Confirm the escrow deposit of{" "}
                   <strong className="font-semibold">
-                    {product.priceMon} test MON
-                  </strong>{" "}
-                  before approving. Repeated clicks are locked while the prompt
-                  is open.
+                    {totalAmountMon} MON
+                  </strong>
+                  .
                 </p>
               </div>
             ) : null}
@@ -268,17 +243,12 @@ export function WalletConfirmationPanel({
               <div className="space-y-3 rounded-[14px] border border-warning-700/30 bg-warning-100/70 p-4">
                 <div className="flex items-center justify-between gap-2">
                   <span className="font-mono text-xs font-semibold uppercase tracking-[0.08em] text-warning-700">
-                    WAITING FOR BLOCK RECEIPT
+                    WAITING FOR BLOCK CONFIRMATION
                   </span>
                   <StatusChip label="CONFIRMING ON-CHAIN" tone="warning" />
                 </div>
                 <p className="text-sm font-semibold text-ink-950">
-                  Transaction submitted. Waiting for Monad testnet receipt…
-                </p>
-                <p className="text-xs leading-5 text-ink-800">
-                  monvault. never reports payment success from a broadcast hash
-                  alone. The order becomes <code className="font-mono">PAID</code>{" "}
-                  only when the receipt confirms.
+                  Transaction broadcast. Waiting for Monad block receipt…
                 </p>
                 <TransactionProof
                   label="SUBMITTED ESCROW TX"
@@ -301,11 +271,6 @@ export function WalletConfirmationPanel({
                 <p className="text-sm font-semibold text-ink-950">
                   {actionState.message}
                 </p>
-                <p className="text-xs leading-5 text-ink-800">
-                  You cancelled the signature request in your wallet. Your{" "}
-                  {product.priceMon} test MON balance is unchanged, and you can
-                  retry whenever ready.
-                </p>
               </div>
             ) : null}
 
@@ -314,18 +279,13 @@ export function WalletConfirmationPanel({
               <div className="space-y-3 rounded-[14px] border border-danger-700/30 bg-danger-100 p-4">
                 <div className="flex items-center justify-between gap-2">
                   <span className="font-mono text-xs font-semibold uppercase tracking-[0.08em] text-danger-700">
-                    CONTRACT REVERTED{" "}
+                    TRANSACTION REVERTED{" "}
                     {actionState.reasonCode ? `· ${actionState.reasonCode}` : ""}
                   </span>
                   <StatusChip label="ESCROW NOT CREATED" tone="danger" />
                 </div>
                 <p className="text-sm font-semibold text-ink-950">
                   {actionState.message}
-                </p>
-                <p className="text-xs leading-5 text-ink-800">
-                  The transaction reverted on-chain, so no test MON was locked
-                  in escrow. Inspect the transaction in the Monad explorer or
-                  generate a fresh order reference and retry.
                 </p>
                 {actionState.txHash ? (
                   <TransactionProof
@@ -343,22 +303,21 @@ export function WalletConfirmationPanel({
               <div className="space-y-4 rounded-[14px] border border-success-700/30 bg-success-100/70 p-4">
                 <div className="flex items-center justify-between gap-2">
                   <span className="font-mono text-xs font-semibold uppercase tracking-[0.08em] text-success-700">
-                    RECEIPT CONFIRMED · ORDER #{actionState.orderId}
+                    ORDER #{actionState.orderId} CONFIRMED
                   </span>
-                  <StatusChip label="FUNDS SECURED" tone="success" />
+                  <StatusChip label="PAID INTO ESCROW" tone="success" />
                 </div>
                 <p className="text-base font-semibold text-ink-950">
-                   Funds secured in escrow ({product.priceMon} test MON)
+                  {totalAmountMon} MON locked in MonVaultEscrow
                 </p>
                 <p className="text-xs leading-5 text-ink-800">
-                  The seller can now see committed funds on-chain and mark Order
-                  #{actionState.orderId} shipped, but cannot withdraw payment
-                  until you confirm delivery or the 5-minute review window
-                  expires without a dispute.
+                  Your order has been recorded in PostgreSQL and locked on-chain.
+                  The merchant cannot withdraw payment until you confirm
+                  delivery.
                 </p>
 
                 <TransactionProof
-                  label="CONFIRMED DEPOSIT TX"
+                  label="CONFIRMED ESCROW DEPOSIT TX"
                   hash={actionState.txHash}
                   explorerUrl={actionState.explorerUrl}
                   state="confirmed"
@@ -366,20 +325,20 @@ export function WalletConfirmationPanel({
 
                 <div className="flex flex-col gap-2.5 pt-1 sm:flex-row">
                   <ButtonLink
-                    href={`/orders/${actionState.orderId}`}
+                    href={`/track?q=${actionState.orderId}`}
                     variant="primary"
                     size="lg"
                     className="flex-1"
                   >
                     Track Order #{actionState.orderId} →
                   </ButtonLink>
-                  <Button
+                  <ButtonLink
+                    href="/shop"
                     variant="secondary"
-                    size="md"
-                    onClick={onResetAction}
+                    size="lg"
                   >
-                    New checkout preview
-                  </Button>
+                    Continue Shopping
+                  </ButtonLink>
                 </div>
               </div>
             ) : null}
@@ -394,7 +353,7 @@ export function WalletConfirmationPanel({
                   pendingLabel={
                     actionState.phase === "awaiting-signature"
                       ? "Confirm in wallet…"
-                      : "Waiting for receipt…"
+                      : "Waiting for block receipt…"
                   }
                   disabled={!deliveryValid || isBusy}
                   onClick={handlePrimarySubmit}
@@ -402,20 +361,19 @@ export function WalletConfirmationPanel({
                 >
                   {actionState.phase === "rejected" ||
                   actionState.phase === "reverted"
-                    ? `Retry escrow deposit (${product.priceMon} test MON)`
-                    : `Lock ${product.priceMon} test MON in escrow`}
+                    ? `Retry Escrow Deposit (${totalAmountMon} MON)`
+                    : `Pay ${totalAmountMon} MON into Escrow`}
                 </Button>
 
                 {!deliveryValid ? (
                   <p className="text-center font-mono text-[11px] text-danger-700">
-                    Complete the off-chain recipient and destination fields to
-                    enable wallet confirmation.
+                    Complete your recipient name and shipping address to
+                    continue.
                   </p>
                 ) : (
                   <p className="text-center font-mono text-[11px] text-ink-600">
-                    Never asks for a private key. Signs{" "}
-                    <code className="font-mono">createOrder</code> via your
-                    wallet extension.
+                    Protected by <code className="font-mono">MonVaultEscrow</code>{" "}
+                    on Monad Testnet.
                   </p>
                 )}
               </div>

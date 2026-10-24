@@ -4,25 +4,31 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
-import { DemoRunbookBar } from "./demo-runbook-bar";
-import { StatusChip } from "./status-chip";
+import { useCartSelection } from "@/data/cart-store";
 
 const navItems = [
-  { label: "Shop", href: "/shop", match: (p: string) => p.startsWith("/shop") || p.startsWith("/products") },
-  { label: "Cart", href: "/cart", match: (p: string) => p.startsWith("/cart") },
-  { label: "Checkout", href: "/checkout", match: (p: string) => p.startsWith("/checkout") },
-  { label: "Track order", href: "/orders/1", match: (p: string) => p.startsWith("/orders") },
-  { label: "Seller view", href: "/seller/orders", match: (p: string) => p.startsWith("/seller") },
+  {
+    label: "Shop",
+    href: "/shop",
+    match: (p: string) => p.startsWith("/shop") || p.startsWith("/products"),
+  },
+  {
+    label: "Track",
+    href: "/track",
+    match: (p: string) => p.startsWith("/track") || p.startsWith("/orders"),
+  },
 ];
 
 export function SiteHeader() {
   const pathname = usePathname() ?? "/";
   const [menuOpen, setMenuOpen] = useState(false);
-  const [showRunbook, setShowRunbook] = useState(true);
+  const { totalItems: cartCount } = useCartSelection();
+  const isCartActive = pathname.startsWith("/cart");
 
   return (
-    <header className="sticky top-0 z-40 border-b border-line bg-surface">
-      <div className="mx-auto flex w-full max-w-[1440px] items-center justify-between gap-3 px-5 py-3.5 md:px-10 lg:px-[72px]">
+    <header className="sticky top-0 z-40 border-b border-line bg-surface/95 backdrop-blur-sm">
+      <div className="mx-auto flex w-full max-w-[1296px] items-center justify-between gap-4 px-5 py-3.5 md:px-10 lg:px-[72px]">
+        {/* Brand Logo -> Home */}
         <Link
           href="/"
           aria-label="monvault. home"
@@ -32,10 +38,10 @@ export function SiteHeader() {
             <Image
               src="/brand/monvault-mark.png"
               alt=""
-              width={40}
-              height={40}
+              width={36}
+              height={36}
               priority
-              className="h-9 w-auto object-contain md:h-10"
+              className="h-8 w-auto object-contain md:h-9"
             />
           </span>
           <span className="text-lg font-semibold tracking-[-0.04em] sm:text-xl">
@@ -43,58 +49,73 @@ export function SiteHeader() {
           </span>
         </Link>
 
-        <nav
-          aria-label="Primary navigation"
-          className="hidden items-center gap-1 lg:flex"
-        >
-          {navItems.map((item) => {
-            const isActive = item.match(pathname);
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                aria-current={isActive ? "page" : undefined}
-                className={`inline-flex min-h-11 items-center rounded-xl px-3.5 py-2 text-[15px] font-medium transition-colors ${
-                  isActive
-                    ? "bg-muted font-semibold text-ink-950"
-                    : "text-ink-800 hover:bg-muted hover:text-ink-950"
-                }`}
-              >
-                {item.label}
-              </Link>
-            );
-          })}
-        </nav>
-
-        <div className="flex items-center gap-2">
-          <StatusChip
-            label="MONAD TESTNET"
-            tone="violet"
-            className="hidden xl:inline-flex"
-          />
-
-          <button
-            type="button"
-            onClick={() => setShowRunbook((prev) => !prev)}
-            aria-pressed={showRunbook}
-            title="Toggle 60-second demo runbook bar"
-            className="hidden min-h-11 items-center rounded-xl border border-line bg-canvas px-3 py-2 font-mono text-[11px] font-semibold uppercase tracking-[0.08em] text-ink-800 transition-colors hover:bg-muted md:inline-flex cursor-pointer"
+        {/* Primary Navigation + Cart Icon */}
+        <div className="flex items-center gap-1.5 sm:gap-2">
+          <nav
+            aria-label="Primary navigation"
+            className="hidden items-center gap-1 md:flex"
           >
-            {showRunbook ? "Hide Demo Bar" : "60s Demo Bar"}
-          </button>
+            {navItems.map((item) => {
+              const isActive = item.match(pathname);
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  aria-current={isActive ? "page" : undefined}
+                  className={`inline-flex min-h-11 items-center rounded-xl px-4 py-2 text-[15px] font-medium transition-colors ${
+                    isActive
+                      ? "bg-muted font-semibold text-ink-950"
+                      : "text-ink-600 hover:bg-muted hover:text-ink-950"
+                  }`}
+                >
+                  {item.label}
+                </Link>
+              );
+            })}
+          </nav>
 
+          {/* Sleek Cart Icon with Reactive Counter */}
           <Link
-            href="/checkout"
-            aria-label="Connect wallet during testnet checkout"
-            className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-ink-950 bg-surface px-3.5 py-2 text-sm font-semibold text-ink-950 transition-colors hover:bg-muted sm:px-4 sm:text-[15px]"
+            href="/cart"
+            aria-label={`Shopping cart with ${cartCount} ${cartCount === 1 ? "item" : "items"}`}
+            aria-current={isCartActive ? "page" : undefined}
+            className={`relative inline-flex min-h-11 items-center gap-2 rounded-xl border px-3.5 py-2 text-sm font-medium transition-colors ${
+              isCartActive
+                ? "border-ink-950 bg-ink-950 text-white"
+                : "border-line bg-canvas text-ink-950 hover:border-ink-950/30 hover:bg-muted"
+            }`}
           >
-            <span
+            <svg
               aria-hidden="true"
-              className="size-2 shrink-0 rounded-full bg-violet-600"
-            />
-            <span>Connect wallet</span>
+              viewBox="0 0 24 24"
+              className="size-[18px] shrink-0 fill-none stroke-current stroke-[1.8]"
+            >
+              <path
+                d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+              <path d="M3 6h18" strokeLinecap="round" strokeLinejoin="round" />
+              <path
+                d="M16 10a4 4 0 0 1-8 0"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+            <span
+              className={`inline-flex min-w-5 items-center justify-center rounded-full px-1.5 py-0.5 font-mono text-xs font-semibold leading-none tabular-nums ${
+                isCartActive
+                  ? "bg-white text-ink-950"
+                  : cartCount > 0
+                    ? "bg-violet-600 text-white"
+                    : "bg-muted text-ink-600"
+              }`}
+            >
+              {cartCount}
+            </span>
           </Link>
 
+          {/* Mobile Drawer Toggle */}
           <button
             type="button"
             onClick={() => setMenuOpen((prev) => !prev)}
@@ -103,7 +124,7 @@ export function SiteHeader() {
             aria-label={
               menuOpen ? "Close navigation menu" : "Open navigation menu"
             }
-            className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-xl border border-line bg-canvas text-ink-950 transition-colors hover:bg-muted lg:hidden cursor-pointer"
+            className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-xl border border-line bg-canvas text-ink-950 transition-colors hover:bg-muted md:hidden cursor-pointer"
           >
             <svg
               aria-hidden="true"
@@ -127,19 +148,11 @@ export function SiteHeader() {
         </div>
       </div>
 
-      {showRunbook ? <DemoRunbookBar /> : null}
-
       {menuOpen ? (
         <div
           id="mobile-navigation-drawer"
-          className="border-t border-line bg-surface px-5 py-4 md:px-10 lg:hidden"
+          className="border-t border-line bg-surface px-5 py-4 md:hidden"
         >
-          <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
-            <span className="font-mono text-[11px] font-semibold uppercase tracking-[0.08em] text-ink-600">
-              NAVIGATION
-            </span>
-            <StatusChip label="MONAD TESTNET" tone="violet" />
-          </div>
           <nav aria-label="Mobile navigation" className="flex flex-col gap-1">
             {navItems.map((item) => {
               const isActive = item.match(pathname);

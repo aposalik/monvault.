@@ -1,12 +1,8 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
 import { StatusChip } from "@/components/ui/status-chip";
 import { Surface } from "@/components/ui/surface";
-import {
-  DEFAULT_DEMO_DELIVERY,
-  type PrivateDeliveryDraft,
-} from "./checkout-types";
+import type { PrivateDeliveryDraft } from "./checkout-types";
 
 export interface DeliveryDetailsFormProps {
   value: PrivateDeliveryDraft;
@@ -33,33 +29,23 @@ export function DeliveryDetailsForm({
     <Surface tone="raised" radius="card" className="p-6 md:p-8">
       <div className="flex flex-wrap items-center justify-between gap-3 border-b border-line pb-4">
         <div>
-          <div className="flex flex-wrap items-center gap-2">
-            <span className="font-mono text-xs font-semibold uppercase tracking-[0.08em] text-success-700">
-              STEP 01 · OFF-CHAIN DELIVERY RECORD
-            </span>
-            <StatusChip label="STORED OFF-CHAIN ONLY" tone="success" />
-          </div>
-          <h2 className="mt-2 text-2xl font-semibold tracking-[-0.03em] text-ink-950">
-            Private delivery details
+          <span className="font-mono text-xs font-semibold uppercase tracking-[0.08em] text-violet-700">
+            STEP 01 · SHIPPING DESTINATION
+          </span>
+          <h2 className="mt-1.5 text-2xl font-semibold tracking-[-0.03em] text-ink-950">
+            Delivery address
           </h2>
         </div>
-
-        <Button
-          variant="secondary"
-          size="md"
-          disabled={disabled}
-          onClick={() => onChange(DEFAULT_DEMO_DELIVERY)}
-        >
-          Reset to demo address
-        </Button>
+        <StatusChip label="ENCRYPTED OFF-CHAIN" tone="success" />
       </div>
 
       <p className="mt-4 text-sm leading-6 text-ink-600">
-        These fields stay in the private off-chain order record. They are{" "}
+        Your shipping address is stored in the off-chain PostgreSQL order record
+        for merchant fulfillment and is{" "}
         <strong className="font-semibold text-ink-950">
-          never passed to the smart contract
-        </strong>{" "}
-        or emitted in blockchain events. Use a fictitious demo destination only.
+          never written to the public blockchain
+        </strong>
+        .
       </p>
 
       <div className="mt-6 grid gap-5 sm:grid-cols-2">
@@ -68,7 +54,7 @@ export function DeliveryDetailsForm({
             htmlFor="checkout-recipient-name"
             className="block font-mono text-xs font-semibold uppercase tracking-[0.08em] text-ink-800"
           >
-            Recipient alias (off-chain)
+            Recipient full name
           </label>
           <input
             id="checkout-recipient-name"
@@ -76,7 +62,7 @@ export function DeliveryDetailsForm({
             disabled={disabled}
             value={value.recipientName}
             onChange={(e) => updateField("recipientName", e.target.value)}
-            placeholder="Demo Buyer (Testnet)"
+            placeholder="Kaan Demir"
             className="mt-2 w-full min-h-11 rounded-[12px] border border-line bg-canvas px-3.5 py-2.5 text-sm text-ink-950 placeholder:text-ink-600/60 disabled:opacity-60"
           />
         </div>
@@ -86,7 +72,7 @@ export function DeliveryDetailsForm({
             htmlFor="checkout-city-district"
             className="block font-mono text-xs font-semibold uppercase tracking-[0.08em] text-ink-800"
           >
-            City / venue (off-chain)
+            City &amp; district
           </label>
           <input
             id="checkout-city-district"
@@ -104,7 +90,7 @@ export function DeliveryDetailsForm({
             htmlFor="checkout-delivery-line"
             className="block font-mono text-xs font-semibold uppercase tracking-[0.08em] text-ink-800"
           >
-            Demo delivery destination (off-chain)
+            Street address, building &amp; suite
           </label>
           <input
             id="checkout-delivery-line"
@@ -112,7 +98,7 @@ export function DeliveryDetailsForm({
             disabled={disabled}
             value={value.deliveryLine}
             onChange={(e) => updateField("deliveryLine", e.target.value)}
-            placeholder="Monad Blitz Demo Desk · Floor 2"
+            placeholder="Söğütözü Cad. No: 42, Floor 4"
             className="mt-2 w-full min-h-11 rounded-[12px] border border-line bg-canvas px-3.5 py-2.5 text-sm text-ink-950 placeholder:text-ink-600/60 disabled:opacity-60"
           />
         </div>
@@ -122,7 +108,7 @@ export function DeliveryDetailsForm({
             htmlFor="checkout-contact-note"
             className="block font-mono text-xs font-semibold uppercase tracking-[0.08em] text-ink-800"
           >
-            Shipment handoff note (off-chain)
+            Delivery instructions (optional)
           </label>
           <input
             id="checkout-contact-note"
@@ -130,7 +116,7 @@ export function DeliveryDetailsForm({
             disabled={disabled}
             value={value.contactNote}
             onChange={(e) => updateField("contactNote", e.target.value)}
-            placeholder="Optional demo note for the seller"
+            placeholder="Courier instructions or building access note"
             className="mt-2 w-full min-h-11 rounded-[12px] border border-line bg-canvas px-3.5 py-2.5 text-sm text-ink-950 placeholder:text-ink-600/60 disabled:opacity-60"
           />
         </div>

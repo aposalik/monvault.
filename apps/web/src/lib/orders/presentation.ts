@@ -91,71 +91,67 @@ export function getOrderStatusCopy(
   switch (status) {
     case "paid":
       return {
-        chipLabel: "FUNDS SECURED",
+        chipLabel: "PAID INTO ESCROW",
         chipTone: "violet",
-        primaryCopy: "Funds secured in escrow",
-        supportingCopy: "The seller can ship, but cannot receive payment yet.",
+        primaryCopy: "Paid into Escrow — Awaiting Seller Dispatch",
+        supportingCopy:
+          "Your payment is locked in the MonVaultEscrow smart contract. The seller is notified to ship your item and cannot withdraw funds early.",
         nextPermittedActor: "Seller (to ship) or Buyer (to dispute)",
         nextPermittedActionSummary:
-          "Seller calls markShipped(orderId) to start the 5-minute review window, or buyer may open a dispute.",
+          "Seller calls markShipped(orderId) once dispatched, or buyer may open a dispute.",
       };
 
     case "shipped": {
-      const isExpired =
-        remainingSeconds !== null && remainingSeconds <= 0;
+      const isExpired = remainingSeconds !== null && remainingSeconds <= 0;
       if (isExpired) {
         return {
-          chipLabel: "00:00 REVIEW EXPIRED",
+          chipLabel: "REVIEW PERIOD ENDED",
           chipTone: "warning",
-          primaryCopy: "Review window ended — seller may claim payment",
+          primaryCopy: "Review Period Ended — Eligible for Settlement",
           supportingCopy:
-            "The five-minute review timer expired without a dispute. The seller now has the right to call claimAfterTimeout(orderId), or the buyer may still confirm delivery before the seller claims.",
+            "The delivery review window has ended without a dispute. The seller may claim payment, or the buyer can confirm delivery.",
           nextPermittedActor: "Seller (timeout claim) or Buyer (confirm)",
           nextPermittedActionSummary:
-            "Seller can claim escrow via claimAfterTimeout(orderId); openDispute reverts now that reviewEndsAt has passed.",
+            "Seller can claim escrow via claimAfterTimeout(orderId), or buyer can confirm delivery.",
         };
       }
 
-      const mm = Math.floor((remainingSeconds ?? 272) / 60)
-        .toString()
-        .padStart(2, "0");
-      const ss = ((remainingSeconds ?? 272) % 60).toString().padStart(2, "0");
-
       return {
-        chipLabel: `${mm}:${ss} TO REVIEW`,
+        chipLabel: "SHIPPED · IN REVIEW",
         chipTone: "warning",
-        primaryCopy: "Seller shipped your order",
+        primaryCopy: "Order Shipped — Inspect & Confirm Delivery",
         supportingCopy:
-          "Confirm delivery or open a dispute before the review timer ends. If the five-minute window expires without a dispute, the seller has the right to claim payment.",
-        nextPermittedActor: "Recorded buyer wallet",
+          "Your package has been dispatched by the seller. Confirm delivery once received to release escrow funds, or open a dispute if there is an issue.",
+        nextPermittedActor: "Buyer Wallet",
         nextPermittedActionSummary:
-          "Buyer calls confirmDelivery(orderId) to release funds immediately, or openDispute(orderId) before the timer reaches 00:00.",
+          "Buyer calls confirmDelivery(orderId) to release payment to the seller, or openDispute(orderId) to freeze funds.",
       };
     }
 
     case "completed":
       return {
-        chipLabel: "SELLER PAID",
+        chipLabel: "COMPLETED",
         chipTone: "success",
-        primaryCopy: "Seller paid",
+        primaryCopy: "Completed — Escrow Released to Seller",
         supportingCopy:
           settlementMethod === "seller-timeout-claim"
-            ? "Payment was released to the seller via claimAfterTimeout after the five-minute review window ended without a dispute."
-            : "Payment was released by buyer confirmation or the review timeout.",
-        nextPermittedActor: "None (terminal state)",
+            ? "Escrow funds were released to the seller after the delivery review period concluded without a dispute."
+            : "Delivery was confirmed by the buyer and escrowed MON has been transferred to the seller.",
+        nextPermittedActor: "None (Settled)",
         nextPermittedActionSummary:
-          "Escrow is settled. All escrowed test MON has been transferred to the seller wallet.",
+          "Order settlement is complete. Escrowed MON has been released to the seller wallet.",
       };
 
     case "disputed":
       return {
-        chipLabel: "DISPUTE OPEN",
+        chipLabel: "DISPUTED · FUNDS FROZEN",
         chipTone: "danger",
-        primaryCopy: "Dispute open",
-        supportingCopy: "Funds remain locked; automated payout is disabled.",
-        nextPermittedActor: "None in MVP (funds frozen)",
+        primaryCopy: "Disputed — Escrow Funds Frozen",
+        supportingCopy:
+          "The buyer opened a dispute for this order. Funds remain locked inside MonVaultEscrow and automatic seller payouts are disabled.",
+        nextPermittedActor: "None (Escrow Frozen)",
         nextPermittedActionSummary:
-          "Both confirmDelivery and seller claimAfterTimeout revert while status is DISPUTED.",
+          "Both confirmDelivery and claimAfterTimeout are blocked while the order is in DISPUTED state.",
       };
   }
 }
@@ -177,69 +173,62 @@ export function getEscrowTimelineSteps(
   return [
     {
       stepNumber: 1,
-      title: "Buyer paid",
-      detail: "Exact test MON sent to createOrder(orderRef, seller).",
-      state: "done",
-      actorBadge: "BUYER WALLET",
+      title: "Paid into Escrow",
+      detail:
+        status === "paid"
+          ? "Funds locked in MonVaultEscrow smart contract. Waiting for seller dispatch."
+          : "Funds locked in MonVaultEscrow smart contract on Monad.",
+      state: status === "paid" ? "current" : "done",
+      actorBadge: "MONVAULT ESCROW",
     },
     {
       stepNumber: 2,
-      title: "Funds locked",
+      title: "Shipped",
       detail:
         status === "paid"
-          ? "Held in MonVaultEscrow. Waiting for seller to ship."
-          : "Escrow deposit verified on Monad testnet.",
-      state: status === "paid" ? "current" : "done",
-      actorBadge: "MONVAULTESCROW",
+          ? "Seller dispatches item and records carrier & tracking reference."
+          : "Seller has dispatched the item; carrier & tracking reference recorded.",
+      state: status === "paid" ? "upcoming" : "done",
+      actorBadge: "SELLER DISPATCH",
     },
     {
       stepNumber: 3,
-      title: "Seller shipped",
-      detail:
-        status === "paid"
-          ? "Seller marks shipped and starts 5-minute review window."
-          : "Order marked shipped; 5-minute review deadline recorded.",
-      state: status === "paid" ? "upcoming" : "done",
-      actorBadge: "SELLER WALLET",
-    },
-    {
-      stepNumber: 4,
-      title: "Buyer review",
+      title: "Delivered / Review Period",
       detail:
         status === "shipped"
           ? isExpired
-            ? "5-minute window ended without dispute; seller can claim."
-            : "Buyer can confirm delivery or open a dispute before 00:00."
+            ? "Review window ended without a dispute; ready for settlement."
+            : "Buyer inspects package and confirms receipt or opens a dispute."
           : status === "paid"
-            ? "5-minute countdown starts after shipment."
-            : "Review window completed.",
+            ? "Starts automatically once seller marks the order shipped."
+            : "Delivery review period completed.",
       state:
         status === "shipped"
           ? "current"
           : status === "paid"
             ? "upcoming"
             : "done",
-      actorBadge: "05:00 WINDOW",
+      actorBadge: "BUYER REVIEW",
     },
     {
-      stepNumber: 5,
+      stepNumber: 4,
       title:
         status === "disputed"
-          ? "Dispute open"
+          ? "Disputed"
           : status === "completed"
-            ? "Seller paid"
-            : "Seller paid / dispute open",
+            ? "Completed"
+            : "Completed / Disputed",
       detail:
         status === "completed"
-          ? "Exact test MON transferred to seller wallet."
+          ? "Escrow released to seller wallet on-chain."
           : status === "disputed"
-            ? "Funds frozen in contract; timeout claim blocked."
-            : "Terminal settlement via confirmation, timeout claim, or dispute.",
+            ? "Buyer opened a dispute; escrow funds are frozen in the contract."
+            : "Escrow releases to seller upon confirmation, or freezes on dispute.",
       state:
         status === "completed" || status === "disputed"
           ? "current"
           : "upcoming",
-      actorBadge: "SETTLEMENT",
+      actorBadge: status === "disputed" ? "FUNDS FROZEN" : "SETTLEMENT",
     },
   ];
 }
@@ -252,31 +241,31 @@ export function formatReviewCountdown(remainingSeconds: number | null): {
   if (remainingSeconds === null) {
     return {
       clock: "05:00",
-      plainStatus: "5-minute review timer starts once the seller marks shipped",
+      plainStatus:
+        "Review timer starts once the seller marks the order shipped.",
       isExpired: false,
     };
   }
 
-  if (remainingSeconds <= 0) {
+  const clamped = Math.max(0, remainingSeconds);
+  const minutes = Math.floor(clamped / 60)
+    .toString()
+    .padStart(2, "0");
+  const seconds = (clamped % 60).toString().padStart(2, "0");
+  const clock = `${minutes}:${seconds}`;
+
+  if (clamped === 0) {
     return {
       clock: "00:00",
       plainStatus:
-        "Review window expired — seller now has the right to claim payment",
+        "Review period ended without a dispute. Seller is eligible to claim payment, or buyer may confirm delivery.",
       isExpired: true,
     };
   }
 
-  const minutes = Math.floor(remainingSeconds / 60);
-  const seconds = remainingSeconds % 60;
-  const clock = `${minutes.toString().padStart(2, "0")}:${seconds
-    .toString()
-    .padStart(2, "0")}`;
-
   return {
     clock,
-    plainStatus: `${minutes}m ${seconds
-      .toString()
-      .padStart(2, "0")}s remaining before seller can claim after timeout`,
+    plainStatus: `${minutes}m ${seconds}s remaining in buyer review window. Confirm delivery or open a dispute before 00:00.`,
     isExpired: false,
   };
 }

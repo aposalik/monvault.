@@ -227,7 +227,7 @@ export function BuyerDecisionPanels({
                   ? "Delivery is already confirmed and the seller has been paid."
                   : status === "disputed"
                     ? "Unavailable because this order is frozen in DISPUTED state."
-                    : `Immediately releases ${amountMon} test MON from escrow to ${sellerName}.`}
+                    : `Immediately releases ${amountMon} MON from escrow to ${sellerName}.`}
             </p>
           </div>
 
@@ -265,7 +265,7 @@ export function BuyerDecisionPanels({
                   ? "Dispute is already open; funds remain locked in the contract."
                   : status === "shipped" && isExpired
                     ? "Review window closed (00:00). openDispute reverts after reviewEndsAt."
-                    : "Freezes escrowed test MON in the contract and blocks seller timeout claims."}
+                    : "Freezes escrowed MON in the contract and blocks seller timeout claims."}
             </p>
           </div>
 
@@ -294,7 +294,7 @@ export function BuyerDecisionPanels({
           </div>
 
           <h4 className="mt-4 text-xl font-semibold text-ink-950">
-            Release {amountMon} test MON to {sellerName}?
+            Release {amountMon} MON to {sellerName}?
           </h4>
           <p className="mt-1.5 text-sm leading-6 text-ink-600">
             Signing <code className="font-mono text-xs">confirmDelivery({orderId})</code>{" "}
@@ -378,7 +378,7 @@ export function BuyerDecisionPanels({
           </div>
 
           <h4 className="mt-4 text-xl font-semibold text-ink-950">
-            Freeze {amountMon} test MON in <code className="font-mono text-lg">DISPUTED</code> state?
+            Freeze {amountMon} MON in <code className="font-mono text-lg">DISPUTED</code> state?
           </h4>
           <p className="mt-1.5 text-sm leading-6 text-ink-600">
             Signing <code className="font-mono text-xs">openDispute({orderId})</code>{" "}
@@ -402,7 +402,7 @@ export function BuyerDecisionPanels({
                 ESCROW CUSTODY EFFECT
               </dt>
               <dd className="mt-0.5 font-semibold text-ink-950">
-                {amountMon} test MON stays locked in contract
+                {amountMon} MON stays locked in contract
               </dd>
             </div>
             <div>

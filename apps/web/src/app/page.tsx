@@ -1,115 +1,52 @@
-import Image from "next/image";
-import { EscrowVaultScene } from "@/components/marketing/escrow-vault-scene";
-import { InteractiveProofPanel } from "@/components/marketing/interactive-proof-panel";
 import { ButtonLink } from "@/components/ui/button";
 import { SectionShell } from "@/components/ui/section-shell";
 import { SiteFooter } from "@/components/ui/site-footer";
 import { SiteHeader } from "@/components/ui/site-header";
-import { StatusChip, type StatusTone } from "@/components/ui/status-chip";
+import { StatusChip } from "@/components/ui/status-chip";
 import { Surface } from "@/components/ui/surface";
 
-const FIVE_STEPS = [
+const ESCROW_STEPS = [
   {
-    step: "01 / PAY",
-    title: "Buyer funds the order",
-    actor: "Buyer wallet",
+    step: "01",
+    title: "Fund your order in escrow",
     rule: "createOrder(orderRef, seller)",
     description:
-      "Checkout creates a private off-chain order record and sends the exact test MON amount to the contract.",
+      "At checkout, your payment in native MON is locked directly inside the MonVaultEscrow smart contract on Monad—never sent upfront to the merchant.",
   },
   {
-    step: "02 / LOCK",
-    title: "Contract secures test MON",
-    actor: "MonVaultEscrow",
-    rule: "Status.PAID",
-    description:
-      "Funds sit inside the contract under public rules. Neither the seller nor the web app can withdraw them early.",
-  },
-  {
-    step: "03 / SHIP",
-    title: "Seller ships with proof of funds",
-    actor: "Seller wallet",
+    step: "02",
+    title: "Seller ships with verified funds",
     rule: "markShipped(orderId)",
     description:
-      "Seeing committed funds on-chain, the seller adds an off-chain demo tracking reference and marks the order shipped.",
+      "Because funds are verifiably locked on-chain, the seller can fulfill and dispatch your order knowing payment is already committed.",
   },
   {
-    step: "04 / REVIEW",
-    title: "Five-minute buyer review window",
-    actor: "Block timestamp",
-    rule: "reviewEndsAt = now + 5m",
+    step: "03",
+    title: "Confirm delivery to release payment",
+    rule: "confirmDelivery(orderId)",
     description:
-      "Shipping starts a deterministic 5-minute demo countdown for the buyer to inspect the delivery and respond.",
-  },
-  {
-    step: "05 / SETTLE",
-    title: "Confirm, timeout, or dispute",
-    actor: "Buyer or seller",
-    rule: "COMPLETED or DISPUTED",
-    description:
-      "Buyer confirmation pays the seller immediately, an undisputed timeout lets the seller claim, and a dispute freezes funds.",
+      "Once your order arrives, you confirm receipt to release the escrowed funds immediately to the seller—or open a dispute if something went wrong.",
   },
 ];
 
-const THREE_OUTCOMES: Array<{
-  id: string;
-  badge: string;
-  tone: StatusTone;
-  title: string;
-  functionSig: string;
-  caller: string;
-  condition: string;
-  summary: string;
-}> = [
+const PROTECTION_GUARANTEES = [
   {
-    id: "confirm",
-    badge: "SELLER PAID IMMEDIATELY",
-    tone: "success",
-    title: "1. Buyer confirmation",
-    functionSig: "confirmDelivery(orderId)",
-    caller: "Recorded buyer only",
-    condition: "Order status is SHIPPED",
-    summary:
-      "When the buyer confirms receipt, the contract transitions to COMPLETED and transfers the exact escrowed test MON to the seller in the same transaction.",
+    title: "Funds stay locked until delivery is confirmed",
+    description:
+      "Neither the seller nor the web application can withdraw your payment early. The smart contract holds the exact order amount until settlement rules are met.",
+    tag: "NON-CUSTODIAL ESCROW",
   },
   {
-    id: "timeout",
-    badge: "CLAIMED AFTER 05:00",
-    tone: "warning",
-    title: "2. Undisputed timeout claim",
-    functionSig: "claimAfterTimeout(orderId)",
-    caller: "Recorded seller only",
-    condition: "SHIPPED + block.timestamp >= reviewEndsAt",
-    summary:
-      "If the buyer takes no action during the 5-minute review window and no dispute is open, the seller can claim the escrowed payment directly from the contract.",
+    title: "Personal shipping details stay private",
+    description:
+      "Only the order reference hash, wallet addresses, and escrow state live on-chain. Your name, street address, and delivery notes remain off-chain.",
+    tag: "PRIVACY PRESERVED",
   },
   {
-    id: "dispute",
-    badge: "FUNDS FROZEN IN ESCROW",
-    tone: "danger",
-    title: "3. Buyer dispute lock",
-    functionSig: "openDispute(orderId)",
-    caller: "Recorded buyer only",
-    condition: "PAID, or SHIPPED before reviewEndsAt",
-    summary:
-      "If there is a problem before the review deadline expires, the buyer opens a dispute. The contract sets DISPUTED and blocks both confirmation and seller timeout claims.",
-  },
-];
-
-const TEAM_MEMBERS = [
-  {
-    name: "Abdullah Salik",
-    role: "Solidity · Wallet Integration · Monad Testnet Deployment",
-    scope:
-      "Owns MonVaultEscrow.sol, Foundry verification suite (18 tests), viem/wagmi chain state, transaction receipts, and testnet explorer evidence.",
-    tracks: "Work packages S1–S5",
-  },
-  {
-    name: "Fahad Faisal",
-    role: "Product UX · Design System · Commerce & Demo Flow",
-    scope:
-      "Owns the monvault. design system, dimensional escrow storytelling, shop/cart/checkout/tracking/seller routes, and off-chain demo shipment UX.",
-    tracks: "Work packages F1–F6",
+    title: "Deterministic protection for both sides",
+    description:
+      "Buyers are protected from unshipped orders with a built-in review window and dispute lock, while sellers are protected against unpaid shipments.",
+    tag: "SYMMETRIC TRUST",
   },
 ];
 
@@ -120,536 +57,234 @@ export default function Home() {
 
       <main id="main-content" className="flex-1">
         {/* 1. HERO SECTION */}
-        <section
-          id="top"
-          className="px-5 pb-20 pt-10 md:px-10 md:pb-28 md:pt-16 lg:px-[72px] lg:pb-36 lg:pt-20"
-        >
-          <div className="mx-auto grid w-full max-w-[1296px] items-center gap-12 lg:grid-cols-[1.08fr_0.92fr] lg:gap-14">
+        <section className="px-5 pb-20 pt-12 md:px-10 md:pb-28 md:pt-20 lg:px-[72px] lg:pb-32 lg:pt-24">
+          <div className="mx-auto grid w-full max-w-[1296px] items-center gap-12 lg:grid-cols-[1.15fr_0.85fr] lg:gap-16">
             <div>
               <div className="flex flex-wrap items-center gap-2.5">
-                <StatusChip label="DELIVERY-PROTECTED CHECKOUT" tone="violet" />
-                <StatusChip label="TESTNET DEMO" tone="neutral" />
+                <StatusChip label="MONAD SMART CONTRACT ESCROW" tone="violet" />
               </div>
 
-              <h1 className="mt-6 max-w-[13ch] text-[clamp(3rem,13vw,5.1rem)] font-semibold leading-[0.94] tracking-[-0.055em] text-ink-950 md:text-[clamp(4rem,6.8vw,6.8rem)]">
-                Buy with confidence. Pay when delivery is confirmed.
+              <h1 className="mt-6 max-w-[14ch] text-[clamp(2.75rem,7vw,5.25rem)] font-semibold leading-[0.96] tracking-[-0.05em] text-ink-950">
+                Shop online. Pay only when delivery is confirmed.
               </h1>
 
-              <p className="mt-7 max-w-[60ch] text-lg leading-[1.55] text-ink-600 md:text-[21px]">
-                monvault. locks native test MON in a public Monad escrow
-                contract during checkout. The seller sees committed funds before
-                shipping, and payment releases only when you confirm delivery or
-                the five-minute review window ends without a dispute.
+              <p className="mt-6 max-w-[56ch] text-lg leading-[1.6] text-ink-600 md:text-xl">
+                monvault. protects every order with an on-chain Monad escrow
+                contract. Your funds are locked at checkout, the seller ships
+                with proof of payment, and money releases only when you confirm
+                delivery.
               </p>
 
               <div className="mt-9 flex flex-col gap-3.5 sm:flex-row sm:items-center">
                 <ButtonLink href="/shop" variant="primary" size="lg">
-                  Try the testnet shop
+                  Explore the shop →
                 </ButtonLink>
-                <ButtonLink href="#how-it-works" variant="secondary" size="lg">
-                  See how escrow works
+                <ButtonLink href="/track" variant="secondary" size="lg">
+                  Track an order
                 </ButtonLink>
               </div>
 
-              <div className="mt-8 grid max-w-xl grid-cols-3 gap-4 border-t border-line pt-6">
+              <div className="mt-10 grid max-w-lg grid-cols-3 gap-6 border-t border-line pt-6">
                 <div>
                   <p className="font-mono text-[11px] font-semibold uppercase tracking-[0.08em] text-ink-600">
-                    ESCROW ASSET
-                  </p>
-                  <p className="mt-1 font-mono text-sm font-semibold text-ink-950 tabular-nums">
-                    Native test MON
-                  </p>
-                </div>
-                <div>
-                  <p className="font-mono text-[11px] font-semibold uppercase tracking-[0.08em] text-ink-600">
-                    REVIEW WINDOW
-                  </p>
-                  <p className="mt-1 font-mono text-sm font-semibold text-ink-950 tabular-nums">
-                    05:00 demo timer
-                  </p>
-                </div>
-                <div>
-                  <p className="font-mono text-[11px] font-semibold uppercase tracking-[0.08em] text-ink-600">
-                    CUSTODY RULE
+                    SETTLEMENT
                   </p>
                   <p className="mt-1 font-mono text-sm font-semibold text-ink-950">
-                    Contract-enforced
+                    Monad Escrow
+                  </p>
+                </div>
+                <div>
+                  <p className="font-mono text-[11px] font-semibold uppercase tracking-[0.08em] text-ink-600">
+                    RELEASE RULE
+                  </p>
+                  <p className="mt-1 font-mono text-sm font-semibold text-ink-950">
+                    Buyer Confirmed
+                  </p>
+                </div>
+                <div>
+                  <p className="font-mono text-[11px] font-semibold uppercase tracking-[0.08em] text-ink-600">
+                    CUSTODY
+                  </p>
+                  <p className="mt-1 font-mono text-sm font-semibold text-ink-950">
+                    100% On-Chain
                   </p>
                 </div>
               </div>
             </div>
 
-            <EscrowVaultScene />
+            {/* Clean, high-contrast Escrow Protection Summary Card (No 3D simulation clutter) */}
+            <Surface
+              tone="raised"
+              radius="card"
+              className="border border-line p-7 shadow-[0_20px_50px_rgba(16,11,43,0.06)] md:p-9"
+            >
+              <div className="flex items-center justify-between gap-3 border-b border-line pb-5">
+                <div>
+                  <p className="font-mono text-xs font-semibold uppercase tracking-[0.08em] text-violet-700">
+                    ESCROW PROTECTION FLOW
+                  </p>
+                  <h2 className="mt-1 text-xl font-semibold tracking-[-0.03em] text-ink-950">
+                    How your payment stays safe
+                  </h2>
+                </div>
+                <StatusChip label="VERIFIED RULES" tone="success" />
+              </div>
+
+              <ol className="mt-6 space-y-5">
+                <li className="rounded-2xl border border-line bg-canvas p-4">
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="font-mono text-xs font-semibold text-violet-700">
+                      STEP 01 · CHECKOUT
+                    </span>
+                    <span className="rounded-md bg-violet-100 px-2 py-0.5 font-mono text-[11px] font-semibold text-violet-700">
+                      PAID
+                    </span>
+                  </div>
+                  <p className="mt-2 text-base font-semibold text-ink-950">
+                    Payment locked in smart contract
+                  </p>
+                  <p className="mt-1 text-sm leading-6 text-ink-600">
+                    Exact order amount is held by{" "}
+                    <code className="font-mono text-xs text-ink-950">
+                      MonVaultEscrow
+                    </code>{" "}
+                    rather than sent directly to the seller.
+                  </p>
+                </li>
+
+                <li className="rounded-2xl border border-line bg-canvas p-4">
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="font-mono text-xs font-semibold text-violet-700">
+                      STEP 02 · FULFILLMENT
+                    </span>
+                    <span className="rounded-md bg-info-100 px-2 py-0.5 font-mono text-[11px] font-semibold text-info-700">
+                      SHIPPED
+                    </span>
+                  </div>
+                  <p className="mt-2 text-base font-semibold text-ink-950">
+                    Seller dispatches your order
+                  </p>
+                  <p className="mt-1 text-sm leading-6 text-ink-600">
+                    Seller sees committed funds on-chain and marks the order
+                    shipped, starting your delivery review window.
+                  </p>
+                </li>
+
+                <li className="rounded-2xl border border-line bg-canvas p-4">
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="font-mono text-xs font-semibold text-violet-700">
+                      STEP 03 · SETTLEMENT
+                    </span>
+                    <span className="rounded-md bg-success-100 px-2 py-0.5 font-mono text-[11px] font-semibold text-success-700">
+                      COMPLETED
+                    </span>
+                  </div>
+                  <p className="mt-2 text-base font-semibold text-ink-950">
+                    Released upon your confirmation
+                  </p>
+                  <p className="mt-1 text-sm leading-6 text-ink-600">
+                    Confirm delivery to pay the seller immediately, or open a
+                    dispute to freeze the escrowed funds.
+                  </p>
+                </li>
+              </ol>
+            </Surface>
           </div>
         </section>
 
-        {/* 2. TRUST GAP SECTION (One tension surface, not two disconnected feature cards) */}
-        <SectionShell
-          id="trust-gap"
-          surface="raised"
-          eyebrow="THE COMMERCE TRUST GAP"
-          title="Every online order asks one side to take the leap first."
-          description="Traditional checkout forces an asymmetric bet between buyer and seller. monvault. replaces blind upfront transfers with a shared, inspectable state machine."
-        >
-          <Surface tone="canvas" radius="card" className="overflow-hidden p-0">
-            <div className="grid divide-y divide-line lg:grid-cols-[1fr_auto_1fr] lg:divide-x lg:divide-y-0">
-              {/* Buyer side of tension */}
-              <div className="p-7 md:p-10">
-                <span className="font-mono text-xs font-semibold uppercase tracking-[0.08em] text-danger-700">
-                  BUYER EXPOSURE WITHOUT ESCROW
-                </span>
-                <h3 className="mt-3 text-2xl font-semibold tracking-[-0.03em] text-ink-950">
-                  “I pay before I know the package will arrive.”
-                </h3>
-                <p className="mt-3 text-base leading-7 text-ink-600">
-                  When payment settles to the merchant at checkout, the buyer
-                  relies entirely on seller goodwill or platform intervention if
-                  an item is never shipped.
-                </p>
-                <div className="mt-6 rounded-xl border border-line bg-surface p-4">
-                  <p className="font-mono text-[11px] font-semibold uppercase tracking-[0.08em] text-violet-700">
-                    HOW MONVAULT PROTECTS THE BUYER
-                  </p>
-                  <p className="mt-1 text-sm leading-6 text-ink-800">
-                    Your test MON stays locked in{" "}
-                    <code className="font-mono text-xs">MonVaultEscrow</code>{" "}
-                    until you call <code className="font-mono text-xs">confirmDelivery</code>{" "}
-                    or open a dispute within the review window.
-                  </p>
-                </div>
-              </div>
-
-              {/* Center tension bridge */}
-              <div className="flex flex-col items-center justify-center bg-muted px-6 py-8 text-center lg:w-60">
-                <span className="rounded-full border border-violet-600 bg-surface px-3 py-1 font-mono text-[11px] font-semibold uppercase tracking-[0.08em] text-violet-700">
-                  SHARED RULE
-                </span>
-                <p className="mt-4 font-mono text-lg font-semibold tracking-[-0.03em] text-ink-950">
-                  MonVaultEscrow
-                </p>
-                <p className="mt-2 text-xs leading-5 text-ink-600">
-                  Holds exact funds on Monad testnet until release conditions
-                  are satisfied.
-                </p>
-              </div>
-
-              {/* Seller side of tension */}
-              <div className="p-7 md:p-10">
-                <span className="font-mono text-xs font-semibold uppercase tracking-[0.08em] text-warning-700">
-                  SELLER EXPOSURE WITHOUT ESCROW
-                </span>
-                <h3 className="mt-3 text-2xl font-semibold tracking-[-0.03em] text-ink-950">
-                  “I cannot ship an item before knowing the money is real.”
-                </h3>
-                <p className="mt-3 text-base leading-7 text-ink-600">
-                  Pay-on-delivery leaves sellers vulnerable to unpaid shipments
-                  or buyers who receive an order and simply vanish without
-                  confirming.
-                </p>
-                <div className="mt-6 rounded-xl border border-line bg-surface p-4">
-                  <p className="font-mono text-[11px] font-semibold uppercase tracking-[0.08em] text-violet-700">
-                    HOW MONVAULT PROTECTS THE SELLER
-                  </p>
-                  <p className="mt-1 text-sm leading-6 text-ink-800">
-                    Funds are verifiably locked before you ship, and{" "}
-                    <code className="font-mono text-xs">claimAfterTimeout</code>{" "}
-                    lets you claim payment once the 5-minute review window
-                    passes without a dispute.
-                  </p>
-                </div>
-              </div>
-            </div>
-          </Surface>
-        </SectionShell>
-
-        {/* 3. FIVE-STEP FLOW SECTION */}
+        {/* 2. THREE-STEP HOW IT WORKS SECTION */}
         <SectionShell
           id="how-it-works"
-          surface="canvas"
-          eyebrow="FIVE-STEP ESCROW LIFECYCLE"
-          title="One order. Five explicit steps from checkout to settlement."
-          description="Every step maps directly to a state transition in MonVaultEscrow.sol—no hidden custodial wallet and no off-chain payment overrides."
-        >
-          <ol className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
-            {FIVE_STEPS.map((item) => (
-              <li
-                key={item.step}
-                className="flex flex-col justify-between rounded-[24px] border border-line bg-surface p-6 shadow-[0_14px_34px_rgba(16,11,43,0.04)]"
-              >
-                <div>
-                  <div className="flex items-center justify-between gap-2">
-                    <span className="font-mono text-xs font-semibold uppercase tracking-[0.08em] text-violet-700 tabular-nums">
-                      {item.step}
-                    </span>
-                    <span className="rounded-md border border-line bg-canvas px-2 py-0.5 font-mono text-[10px] font-medium uppercase tracking-[0.06em] text-ink-600">
-                      {item.actor}
-                    </span>
-                  </div>
-                  <h3 className="mt-5 text-xl font-semibold tracking-[-0.03em] text-ink-950">
-                    {item.title}
-                  </h3>
-                  <p className="mt-3 text-sm leading-6 text-ink-600">
-                    {item.description}
-                  </p>
-                </div>
-
-                <div className="mt-6 border-t border-line pt-3.5">
-                  <p className="font-mono text-[10px] uppercase tracking-[0.08em] text-ink-600">
-                    CONTRACT RULE
-                  </p>
-                  <code className="mt-1 block font-mono text-xs font-semibold text-ink-950">
-                    {item.rule}
-                  </code>
-                </div>
-              </li>
-            ))}
-          </ol>
-        </SectionShell>
-
-        {/* 4. INTERACTIVE PROOF SECTION */}
-        <SectionShell
-          id="interactive-proof"
-          surface="muted"
-          eyebrow="TRANSACTION EVIDENCE & STATE MODEL"
-          title="A transaction you can see and verify."
-          description="Toggle between the four contract states below to see the exact status language, countdown behavior, caller permissions, and explorer proof surfaced in the app."
-        >
-          <InteractiveProofPanel />
-        </SectionShell>
-
-        {/* 5. SYSTEM ARCHITECTURE SECTION */}
-        <SectionShell
-          id="architecture"
-          surface="canvas"
-          eyebrow="ARCHITECTURE & PRIVACY BOUNDARIES"
-          title="Public money rules on-chain. Personal delivery data off-chain."
-          description="Blockchains are public ledgers. monvault. stores only the financial state machine and an opaque order reference hash on Monad, keeping customer addresses and tracking details private."
-        >
-          <Surface tone="raised" radius="card" className="p-5 md:p-8">
-            <Image
-              src="/visuals/escrow-architecture.svg"
-              alt="Diagram showing Next.js and Wallet in column 1, MonVaultEscrow.sol on Monad Testnet in column 2, and Private Off-Chain Commerce Data in column 3."
-              width={960}
-              height={360}
-              className="h-auto w-full rounded-[16px]"
-            />
-
-            <div className="mt-8 grid gap-6 border-t border-line pt-8 md:grid-cols-2">
-              <div className="rounded-[18px] border border-line bg-canvas p-6">
-                <div className="flex items-center justify-between">
-                  <span className="font-mono text-xs font-semibold uppercase tracking-[0.08em] text-violet-700">
-                    PUBLIC ON MONAD TESTNET
-                  </span>
-                  <StatusChip label="INSPECTABLE" tone="violet" />
-                </div>
-                <ul className="mt-4 space-y-2.5 text-sm leading-6 text-ink-800">
-                  <li>
-                    • Sequential <code className="font-mono text-xs">orderId</code>{" "}
-                    and unique hashed <code className="font-mono text-xs">bytes32 orderRef</code>
-                  </li>
-                  <li>
-                    • Buyer and seller wallet addresses (<code className="font-mono text-xs">address</code>)
-                  </li>
-                  <li>
-                    • Exact escrowed native test MON amount (<code className="font-mono text-xs">uint256</code>)
-                  </li>
-                  <li>
-                    • Five-minute review deadline timestamp (<code className="font-mono text-xs">reviewEndsAt</code>)
-                  </li>
-                  <li>
-                    • Current <code className="font-mono text-xs">Status</code>{" "}
-                    enum (<code className="font-mono text-xs">PAID</code>,{" "}
-                    <code className="font-mono text-xs">SHIPPED</code>,{" "}
-                    <code className="font-mono text-xs">COMPLETED</code>,{" "}
-                    <code className="font-mono text-xs">DISPUTED</code>)
-                  </li>
-                </ul>
-              </div>
-
-              <div className="rounded-[18px] border border-line bg-canvas p-6">
-                <div className="flex items-center justify-between">
-                  <span className="font-mono text-xs font-semibold uppercase tracking-[0.08em] text-success-700">
-                    PRIVATE OFF-CHAIN METADATA
-                  </span>
-                  <StatusChip label="NEVER IN CALLDATA" tone="success" />
-                </div>
-                <ul className="mt-4 space-y-2.5 text-sm leading-6 text-ink-800">
-                  <li>
-                    • Product catalog title, imagery, description, and display
-                    pricing
-                  </li>
-                  <li>
-                    • Buyer recipient name, street delivery address, and contact
-                    notes
-                  </li>
-                  <li>
-                    • Clearly labelled demo shipment tracking reference and
-                    carrier notes
-                  </li>
-                  <li>
-                    • Strict boundary: the off-chain layer never holds private
-                    keys and cannot move customer escrow funds
-                  </li>
-                </ul>
-              </div>
-            </div>
-          </Surface>
-        </SectionShell>
-
-        {/* 6. THREE OUTCOMES SECTION */}
-        <SectionShell
-          id="outcomes"
           surface="raised"
-          eyebrow="THREE DETERMINISTIC OUTCOMES"
-          title="Every shipped order resolves through one of three rules."
-          description="Confirmation, timeout claim, and dispute lock carry equal architectural clarity—every participant knows what happens before signing."
+          eyebrow="SIMPLE & TRANSPARENT"
+          title="Three clear steps from checkout to delivery."
+          description="Every order follows a strict, inspectable state machine on Monad—removing blind upfront transfers from online shopping."
         >
-          <div className="grid gap-6 lg:grid-cols-3">
-            {THREE_OUTCOMES.map((outcome) => (
+          <div className="grid gap-6 md:grid-cols-3">
+            {ESCROW_STEPS.map((item) => (
               <Surface
-                key={outcome.id}
+                key={item.step}
                 tone="canvas"
                 radius="card"
                 className="flex flex-col justify-between p-7"
               >
                 <div>
-                  <StatusChip label={outcome.badge} tone={outcome.tone} />
+                  <span className="inline-flex size-10 items-center justify-center rounded-xl border border-violet-600/30 bg-violet-100 font-mono text-sm font-semibold text-violet-700 tabular-nums">
+                    {item.step}
+                  </span>
                   <h3 className="mt-5 text-2xl font-semibold tracking-[-0.03em] text-ink-950">
-                    {outcome.title}
+                    {item.title}
                   </h3>
                   <p className="mt-3 text-base leading-7 text-ink-600">
-                    {outcome.summary}
+                    {item.description}
                   </p>
                 </div>
 
-                <dl className="mt-8 space-y-2.5 border-t border-line pt-5 text-xs">
-                  <div className="flex items-center justify-between gap-2">
-                    <dt className="font-mono uppercase tracking-[0.08em] text-ink-600">
-                      FUNCTION
-                    </dt>
-                    <dd className="font-mono font-semibold text-violet-700">
-                      {outcome.functionSig}
-                    </dd>
-                  </div>
-                  <div className="flex items-center justify-between gap-2">
-                    <dt className="font-mono uppercase tracking-[0.08em] text-ink-600">
-                      CALLER
-                    </dt>
-                    <dd className="font-medium text-ink-950">
-                      {outcome.caller}
-                    </dd>
-                  </div>
-                  <div className="flex items-center justify-between gap-2">
-                    <dt className="font-mono uppercase tracking-[0.08em] text-ink-600">
-                      PRECONDITION
-                    </dt>
-                    <dd className="font-mono text-[11px] text-ink-800">
-                      {outcome.condition}
-                    </dd>
-                  </div>
-                </dl>
+                <div className="mt-6 border-t border-line pt-4">
+                  <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.08em] text-ink-600">
+                    ON-CHAIN ACTION
+                  </p>
+                  <code className="mt-1 block font-mono text-xs font-semibold text-violet-700">
+                    {item.rule}
+                  </code>
+                </div>
               </Surface>
             ))}
           </div>
         </SectionShell>
 
-        {/* 7. HONEST LIMITATIONS SECTION */}
+        {/* 3. CORE GUARANTEES SECTION */}
         <SectionShell
-          id="limitations"
-          surface="night"
-          eyebrow="HONEST SECURITY BOUNDARIES"
-          title="What the escrow contract enforces—and what it does not claim."
-          description="A credible payment prototype states its exact trust boundaries. monvault. enforces custody and release rules on-chain without pretending a smart contract can inspect a physical doorstep."
-        >
-          <div className="grid gap-6 lg:grid-cols-2">
-            <Surface tone="night" radius="card" className="p-7 md:p-8">
-              <StatusChip label="ENFORCED BY SOLIDITY" tone="success" />
-              <h3 className="mt-5 text-2xl font-semibold tracking-[-0.03em] text-white">
-                Guaranteed by{" "}
-                <code className="font-mono text-xl text-lilac-300">
-                  MonVaultEscrow
-                </code>
-              </h3>
-              <ul className="mt-5 space-y-3 text-base leading-7 text-lilac-150/90">
-                <li>
-                  • Zero-value orders, zero-address sellers, and duplicate
-                  order references revert immediately.
-                </li>
-                <li>
-                  • Only the recorded seller wallet for that order can call{" "}
-                  <code className="font-mono text-sm text-white">markShipped</code>{" "}
-                  or{" "}
-                  <code className="font-mono text-sm text-white">
-                    claimAfterTimeout
-                  </code>
-                  .
-                </li>
-                <li>
-                  • Only the recorded buyer wallet can call{" "}
-                  <code className="font-mono text-sm text-white">
-                    confirmDelivery
-                  </code>{" "}
-                  or{" "}
-                  <code className="font-mono text-sm text-white">
-                    openDispute
-                  </code>
-                  .
-                </li>
-                <li>
-                  • Seller timeout claims revert before the full 5-minute window
-                  expires or if a dispute was opened.
-                </li>
-                <li>
-                  • Payouts follow checks-effects-interactions and a{" "}
-                  <code className="font-mono text-sm text-white">
-                    nonReentrant
-                  </code>{" "}
-                  guard.
-                </li>
-              </ul>
-            </Surface>
-
-            <Surface tone="night" radius="card" className="p-7 md:p-8">
-              <StatusChip label="INTENTIONAL MVP SCOPE" tone="warning" />
-              <h3 className="mt-5 text-2xl font-semibold tracking-[-0.03em] text-white">
-                Outside autonomous on-chain proof
-              </h3>
-              <ul className="mt-5 space-y-3 text-base leading-7 text-lilac-150/90">
-                <li>
-                  • <strong className="text-white">Physical delivery oracle:</strong>{" "}
-                  The blockchain cannot independently verify that a physical box
-                  arrived; the buyer’s confirmation or dispute acts as the
-                  oracle.
-                </li>
-                <li>
-                  • <strong className="text-white">Dispute arbitration:</strong>{" "}
-                  Opening a dispute freezes funds in the contract. This MVP
-                  intentionally omits admin backdoors or automated refund
-                  judges.
-                </li>
-                <li>
-                  • <strong className="text-white">Demo carrier tracking:</strong>{" "}
-                  Shipment tracking numbers are stored off-chain for the demo
-                  and are not cryptographic carrier proofs.
-                </li>
-                <li>
-                  • <strong className="text-white">Testnet only:</strong> All
-                  orders use disposable wallets and faucet test MON—never real
-                  money.
-                </li>
-              </ul>
-            </Surface>
-          </div>
-        </SectionShell>
-
-        {/* 8. TEAM & REPOSITORY SECTION */}
-        <SectionShell
-          id="team"
+          id="security"
           surface="canvas"
-          eyebrow="ENGINEERING TEAM & REPOSITORY"
-          title="Built with explicit ownership and verified slices."
-          description="Contract logic and chain state are verified with 18 Foundry tests before connecting the customer and seller experiences."
+          eyebrow="WHY MONVAULT ESCROW"
+          title="Built for buyer confidence and seller certainty."
+          description="Public smart contract rules secure the payment while keeping your personal shipping information off the blockchain."
         >
-          <div className="grid gap-6 lg:grid-cols-[1.15fr_0.85fr]">
-            <div className="grid gap-6 sm:grid-cols-2">
-              {TEAM_MEMBERS.map((member) => (
-                <Surface
-                  key={member.name}
-                  tone="raised"
-                  radius="card"
-                  className="flex flex-col justify-between p-7"
-                >
-                  <div>
-                    <span className="font-mono text-xs font-semibold uppercase tracking-[0.08em] text-violet-700">
-                      {member.tracks}
-                    </span>
-                    <h3 className="mt-2 text-2xl font-semibold tracking-[-0.03em] text-ink-950">
-                      {member.name}
-                    </h3>
-                    <p className="mt-1 text-sm font-semibold text-ink-800">
-                      {member.role}
-                    </p>
-                    <p className="mt-4 text-sm leading-6 text-ink-600">
-                      {member.scope}
-                    </p>
-                  </div>
-                </Surface>
-              ))}
-            </div>
-
-            <Surface tone="muted" radius="card" className="p-7">
-              <span className="font-mono text-xs font-semibold uppercase tracking-[0.08em] text-ink-600">
-                DELIVERY ROADMAP
-              </span>
-              <h3 className="mt-2 text-2xl font-semibold tracking-[-0.03em] text-ink-950">
-                Verification status
-              </h3>
-              <ul className="mt-5 space-y-3 text-sm">
-                <li className="flex items-center justify-between gap-2 border-b border-line pb-2.5">
-                  <span className="font-medium text-ink-950">
-                    Phase 1–2 · Escrow contract &amp; 18 Foundry tests
+          <div className="grid gap-6 lg:grid-cols-3">
+            {PROTECTION_GUARANTEES.map((item) => (
+              <Surface
+                key={item.title}
+                tone="raised"
+                radius="card"
+                className="flex flex-col justify-between p-7"
+              >
+                <div>
+                  <span className="font-mono text-xs font-semibold uppercase tracking-[0.08em] text-violet-700">
+                    {item.tag}
                   </span>
-                  <StatusChip label="COMPLETE" tone="success" />
-                </li>
-                <li className="flex items-center justify-between gap-2 border-b border-line pb-2.5">
-                  <span className="font-medium text-ink-950">
-                    F1 · Design system &amp; portfolio homepage
-                  </span>
-                  <StatusChip label="COMPLETE" tone="success" />
-                </li>
-                <li className="flex items-center justify-between gap-2 border-b border-line pb-2.5">
-                  <span className="font-medium text-ink-950">
-                    F2–F6 · Shop, Checkout, Tracking, Seller &amp; Demo QA
-                  </span>
-                  <StatusChip label="COMPLETE" tone="success" />
-                </li>
-                <li className="flex items-center justify-between gap-2">
-                  <span className="font-medium text-ink-950">
-                    Phase 3 · Monad testnet deployment &amp; proof
-                  </span>
-                  <StatusChip label="NEXT UP" tone="info" />
-                </li>
-              </ul>
-
-              <div className="mt-6 flex flex-wrap gap-3">
-                <ButtonLink
-                  href="https://github.com/aposalik/ProofCart"
-                  variant="secondary"
-                  size="md"
-                  external
-                >
-                  View GitHub repository ↗
-                </ButtonLink>
-              </div>
-            </Surface>
+                  <h3 className="mt-3 text-2xl font-semibold tracking-[-0.03em] text-ink-950">
+                    {item.title}
+                  </h3>
+                  <p className="mt-3 text-base leading-7 text-ink-600">
+                    {item.description}
+                  </p>
+                </div>
+              </Surface>
+            ))}
           </div>
         </SectionShell>
 
-        {/* 9. FINAL CTA SECTION */}
-        <section className="border-t border-line bg-muted px-5 py-20 md:px-10 md:py-28 lg:px-[72px]">
-          <div className="mx-auto flex w-full max-w-[1296px] flex-col items-start justify-between gap-8 rounded-[28px] border border-line bg-surface p-8 shadow-[0_24px_60px_rgba(16,11,43,0.06)] md:p-12 lg:flex-row lg:items-center">
+        {/* 4. DIRECT CTA SECTION */}
+        <section className="border-t border-line bg-muted px-5 py-20 md:px-10 md:py-24 lg:px-[72px]">
+          <div className="mx-auto flex w-full max-w-[1296px] flex-col items-start justify-between gap-8 rounded-[28px] border border-line bg-surface p-8 shadow-[0_20px_50px_rgba(16,11,43,0.05)] md:p-12 lg:flex-row lg:items-center">
             <div className="max-w-2xl">
-              <StatusChip label="READY TO TEST" tone="violet" />
-              <h2 className="mt-4 text-3xl font-semibold tracking-[-0.04em] text-ink-950 md:text-5xl">
-                Walk through a delivery-protected order from cart to payout.
+              <StatusChip label="DELIVERY-PROTECTED COMMERCE" tone="violet" />
+              <h2 className="mt-4 text-3xl font-semibold tracking-[-0.04em] text-ink-950 md:text-4xl">
+                Ready to shop with smart contract escrow?
               </h2>
               <p className="mt-3 text-base leading-7 text-ink-600 md:text-lg">
-                Browse the seeded demo catalog, lock test MON in escrow, or
-                inspect the contract state machine before connecting a disposable
-                testnet wallet.
+                Browse the catalog, add an item to your cart, and lock your
+                payment safely in escrow until your delivery arrives.
               </p>
             </div>
 
             <div className="flex w-full flex-col gap-3 sm:w-auto sm:flex-row">
               <ButtonLink href="/shop" variant="primary" size="lg">
-                Enter testnet shop
+                Browse the shop →
               </ButtonLink>
-              <ButtonLink
-                href="#interactive-proof"
-                variant="secondary"
-                size="lg"
-              >
-                Inspect contract state
+              <ButtonLink href="/orders/1" variant="secondary" size="lg">
+                Track existing order
               </ButtonLink>
             </div>
           </div>

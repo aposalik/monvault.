@@ -40,17 +40,17 @@ export interface CreateOrderPresentationInput {
   privateDelivery: PrivateDeliveryDraft;
 }
 
-export const DEFAULT_DEMO_DELIVERY: PrivateDeliveryDraft = {
-  recipientName: "Demo Buyer (Testnet)",
+export const DEFAULT_DELIVERY_DRAFT: PrivateDeliveryDraft = {
+  recipientName: "Kaan Demir",
   cityAndDistrict: "Çankaya, Ankara",
-  deliveryLine: "Monad Blitz Demo Desk · Floor 2 (Seeded Demo Address)",
-  contactNote: "Leave at hackathon demo station — off-chain note only",
+  deliveryLine: "Söğütözü Cad. No: 42, Floor 4",
+  contactNote: "Deliver to reception desk",
 };
 
-export const SAMPLE_MONAD_EXPLORER_BASE = "https://testnet.monadexplorer.com/tx";
+export const SAMPLE_MONAD_EXPLORER_BASE = "https://testnet.monadvision.com/tx";
 
 /**
- * Generates a deterministic 32-byte hex preview representing the opaque
+ * Generates a deterministic 32-byte hex reference representing the opaque
  * off-chain order reference hash passed to createOrder(bytes32 orderRef, address seller).
  * Personal delivery fields are never encoded into this value.
  */

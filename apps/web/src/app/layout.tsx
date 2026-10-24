@@ -5,11 +5,11 @@ import "./globals.css";
 export const metadata: Metadata = {
   applicationName: "monvault.",
   title: {
-    default: "monvault. — Delivery-protected checkout on Monad",
+    default: "monvault. — Delivery-protected shopping on Monad",
     template: "%s · monvault.",
   },
   description:
-    "A testnet ecommerce escrow demo that locks payment until delivery confirmation or the review timeout.",
+    "Online marketplace protected by Monad smart contract escrow. Funds stay locked until delivery is confirmed.",
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {

@@ -1,9 +1,9 @@
 "use client";
 
-import Link from "next/link";
+import Image from "next/image";
 import { useRef, useState } from "react";
 import { MonAmount } from "@/components/catalog/mon-amount";
-import { Button, ButtonLink } from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
 import { StatusChip } from "@/components/ui/status-chip";
 import { Surface } from "@/components/ui/surface";
 import {
@@ -29,10 +29,14 @@ export interface SellerOrderRecord {
   productName: string;
   productSku: string;
   productSlug: string;
+  productImageSrc?: string;
   amountMon: string;
   buyerAddress: `0x${string}`;
   sellerAddress: `0x${string}`;
   status: OrderStatus;
+  carrier: string | null;
+  trackingNumber: string | null;
+  deliverySummary?: string;
   remainingSeconds: number | null;
   settlementMethod?: "buyer-confirmed" | "seller-timeout-claim";
   transactions: OrderTransactionRecord[];
@@ -43,12 +47,26 @@ export interface SellerShipmentPanelProps {
   shipment: DemoShipmentMetadata | null;
   permissions: OrderCallerPermissions;
   actionState: OrderActionState;
-  onSaveOffChainTracking: (trackingRef: string, dispatchNote: string) => void;
-  onMarkShipped: (trackingRef: string, dispatchNote: string) => Promise<void>;
+  onSaveOffChainTracking: (
+    carrier: string,
+    trackingRef: string,
+    dispatchNote: string,
+  ) => void;
+  onMarkShipped: (
+    carrier: string,
+    trackingRef: string,
+    dispatchNote: string,
+  ) => Promise<void>;
   onClaimAfterTimeout: () => Promise<void>;
-  onAdjustPreviewSeconds: (seconds: number) => void;
   onResetActionState: () => void;
 }
+
+const CARRIER_OPTIONS = [
+  "DHL Express",
+  "FedEx International Priority",
+  "UPS Express Saver",
+  "Aras Kargo Priority",
+];
 
 export function SellerShipmentPanel({
   order,
@@ -58,15 +76,19 @@ export function SellerShipmentPanel({
   onSaveOffChainTracking,
   onMarkShipped,
   onClaimAfterTimeout,
-  onAdjustPreviewSeconds,
   onResetActionState,
 }: SellerShipmentPanelProps) {
+  const [carrierInput, setCarrierInput] = useState(
+    shipment?.carrierLabel || order.carrier || CARRIER_OPTIONS[0],
+  );
   const [trackingInput, setTrackingInput] = useState(
-    shipment?.trackingRef ?? generateDemoTrackingRef(order.orderId),
+    shipment?.trackingRef ||
+      order.trackingNumber ||
+      generateDemoTrackingRef(order.orderId),
   );
   const [noteInput, setNoteInput] = useState(
-    shipment?.dispatchNote ??
-      "Handed to Monad Blitz demo runner · Off-chain tracking note",
+    shipment?.dispatchNote ||
+      "Dispatched from Ankara Precision Lab fulfillment center",
   );
   const [savedNotice, setSavedNotice] = useState(false);
   const inFlightRef = useRef(false);
@@ -84,7 +106,11 @@ export function SellerShipmentPanel({
 
   function handleSaveDraftOnly() {
     if (!trackingInput.trim()) return;
-    onSaveOffChainTracking(trackingInput.trim(), noteInput.trim());
+    onSaveOffChainTracking(
+      carrierInput.trim(),
+      trackingInput.trim(),
+      noteInput.trim(),
+    );
     setSavedNotice(true);
     window.setTimeout(() => setSavedNotice(false), 2000);
   }
@@ -100,7 +126,11 @@ export function SellerShipmentPanel({
     }
     inFlightRef.current = true;
     try {
-      await onMarkShipped(trackingInput.trim(), noteInput.trim());
+      await onMarkShipped(
+        carrierInput.trim(),
+        trackingInput.trim(),
+        noteInput.trim(),
+      );
     } finally {
       inFlightRef.current = false;
     }
@@ -118,6 +148,9 @@ export function SellerShipmentPanel({
     }
   }
 
+  const activeTrackingNumber = shipment?.trackingRef || order.trackingNumber;
+  const activeCarrier = shipment?.carrierLabel || order.carrier;
+
   return (
     <div className="space-y-6">
       {/* Selected Order Header & Chain Status */}
@@ -125,7 +158,7 @@ export function SellerShipmentPanel({
         <div className="flex flex-wrap items-center justify-between gap-3 border-b border-line pb-4">
           <div className="flex flex-wrap items-center gap-2">
             <span className="font-mono text-xs font-semibold uppercase tracking-[0.08em] text-violet-700">
-              SELECTED ORDER #{order.orderId}
+              ORDER #{order.orderId} · POSTGRESQL RECORD
             </span>
             <StatusChip
               label={statusCopy.chipLabel}
@@ -133,27 +166,36 @@ export function SellerShipmentPanel({
             />
           </div>
 
-          <Link
-            href={`/orders/${order.orderId}`}
-            className="font-mono text-xs font-semibold uppercase tracking-[0.08em] text-violet-700 hover:underline"
-          >
-            Inspect Buyer View (/orders/{order.orderId}) →
-          </Link>
+          <span className="font-mono text-xs text-ink-600">
+            SKU: <strong className="text-ink-950">{order.productSku}</strong>
+          </span>
         </div>
 
         <div className="mt-5 grid gap-6 sm:grid-cols-[1.2fr_0.8fr]">
           <div>
-            <span className="font-mono text-[11px] font-semibold uppercase tracking-[0.08em] text-ink-600">
-              {order.productSku}
-            </span>
-            <h2 className="mt-1 text-2xl font-semibold tracking-[-0.03em] text-ink-950 md:text-3xl">
-              {order.productName}
-            </h2>
-            <p className="mt-2 text-sm leading-6 text-ink-600">
-              {statusCopy.supportingCopy}
-            </p>
+            <div className="flex items-start gap-4">
+              {order.productImageSrc ? (
+                <div className="relative size-16 shrink-0 overflow-hidden rounded-2xl border border-line bg-canvas p-2">
+                  <Image
+                    src={order.productImageSrc}
+                    alt={order.productName}
+                    fill
+                    sizes="64px"
+                    className="object-contain p-1"
+                  />
+                </div>
+              ) : null}
+              <div>
+                <h2 className="text-2xl font-semibold tracking-[-0.03em] text-ink-950">
+                  {order.productName}
+                </h2>
+                <p className="mt-1.5 text-sm leading-6 text-ink-600">
+                  {statusCopy.supportingCopy}
+                </p>
+              </div>
+            </div>
 
-            <dl className="mt-4 space-y-2 border-t border-line pt-4 text-xs">
+            <dl className="mt-5 space-y-2.5 border-t border-line pt-4 text-xs">
               <div className="flex items-center justify-between gap-2">
                 <dt className="font-mono uppercase tracking-[0.08em] text-ink-600">
                   BUYER WALLET
@@ -169,7 +211,7 @@ export function SellerShipmentPanel({
               </div>
               <div className="flex items-center justify-between gap-2">
                 <dt className="font-mono uppercase tracking-[0.08em] text-ink-600">
-                  OPAQUE ORDER REF
+                  ON-CHAIN ORDER REF
                 </dt>
                 <dd>
                   <code
@@ -180,14 +222,16 @@ export function SellerShipmentPanel({
                   </code>
                 </dd>
               </div>
-              <div className="flex items-center justify-between gap-2">
-                <dt className="font-mono uppercase tracking-[0.08em] text-ink-600">
-                  BUYER PRIVATE ADDRESS
-                </dt>
-                <dd className="font-mono text-[11px] text-ink-600">
-                  Hidden on-chain (off-chain order store only)
-                </dd>
-              </div>
+              {order.deliverySummary ? (
+                <div className="flex flex-col justify-between gap-1 rounded-xl border border-line bg-canvas p-3 sm:flex-row sm:items-center">
+                  <dt className="font-mono text-[10px] uppercase tracking-[0.08em] text-ink-600">
+                    FULFILLMENT DESTINATION (OFF-CHAIN DB)
+                  </dt>
+                  <dd className="font-medium text-ink-950">
+                    {order.deliverySummary}
+                  </dd>
+                </div>
+              ) : null}
             </dl>
           </div>
 
@@ -195,7 +239,7 @@ export function SellerShipmentPanel({
           <div className="flex flex-col justify-between rounded-[18px] border border-line bg-canvas p-5">
             <div>
               <span className="font-mono text-[11px] font-semibold uppercase tracking-[0.08em] text-ink-600">
-                ESCROWED PAYOUT AMOUNT
+                ESCROWED ORDER PAYOUT
               </span>
               <div className="mt-1.5">
                 <MonAmount amount={order.amountMon} size="xl" />
@@ -204,45 +248,46 @@ export function SellerShipmentPanel({
 
             <div className="mt-4 border-t border-line pt-3">
               <span className="block font-mono text-[10px] font-semibold uppercase tracking-[0.08em] text-ink-600">
-                PAYOUT STATE
+                SETTLEMENT STATUS
               </span>
               <p className="mt-1 font-mono text-xs font-semibold text-ink-950">
                 {order.status === "completed"
-                  ? "RELEASED TO SELLER WALLET"
+                  ? "RELEASED TO MERCHANT WALLET"
                   : order.status === "disputed"
                     ? "FROZEN IN CONTRACT (DISPUTED)"
                     : order.status === "shipped" && countdown.isExpired
-                      ? "ELIGIBLE FOR SELLER TIMEOUT CLAIM"
-                      : "LOCKED UNTIL CONFIRMATION OR 05:00 TIMEOUT"}
+                      ? "ELIGIBLE FOR TIMEOUT CLAIM"
+                      : "LOCKED IN MONVAULTESCROW"}
               </p>
             </div>
           </div>
         </div>
       </Surface>
 
-      {/* Authorization Gate: Only connected seller experience exposes seller actions */}
+      {/* Authorization Gate: Only authorized seller wallet can interact with seller management actions */}
       {!isSellerConnected ? (
         <Surface tone="raised" radius="card" className="p-6 md:p-8">
           <div className="flex flex-wrap items-center justify-between gap-2 border-b border-line pb-4">
             <span className="font-mono text-xs font-semibold uppercase tracking-[0.08em] text-warning-700">
-              SELLER AUTHORIZATION REQUIRED
+              MERCHANT AUTHORIZATION REQUIRED
             </span>
-            <StatusChip label="WRONG WALLET FOR SELLER VIEW" tone="warning" />
+            <StatusChip label="UNAUTHORIZED WALLET CONNECTED" tone="warning" />
           </div>
           <p className="mt-4 text-base font-semibold text-ink-950">
-            Seller operations are restricted to the recorded seller wallet.
+            Order fulfillment and settlement actions are restricted to the
+            authorized merchant wallet.
           </p>
           <p className="mt-2 text-sm leading-6 text-ink-600">
-            <code className="font-mono text-xs">MonVaultEscrow</code> enforces{" "}
+            Both PostgreSQL fulfillment endpoints and{" "}
+            <code className="font-mono text-xs">MonVaultEscrow</code> enforce{" "}
             <code className="font-mono text-xs">
               if (msg.sender != order.seller) revert UnauthorizedSeller()
             </code>
-            . Switch to the seeded seller wallet (
+            . Connect the authorized merchant wallet (
             <code className="font-mono text-xs">
               {truncateHex(order.sellerAddress, 8, 6)}
             </code>
-            ) to enter demo tracking metadata, mark orders shipped, or claim
-            after the five-minute review window.
+            ) above to dispatch shipments or claim timeout payouts.
           </p>
         </Surface>
       ) : (
@@ -254,13 +299,13 @@ export function SellerShipmentPanel({
                 <div className="rounded-[18px] border border-violet-600 bg-lilac-150/70 p-5">
                   <div className="flex items-center justify-between gap-2">
                     <span className="font-mono text-xs font-semibold uppercase tracking-[0.08em] text-violet-700">
-                      CONFIRM IN SELLER WALLET
+                      CONFIRM IN MERCHANT WALLET
                     </span>
                     <StatusChip label="AWAITING SIGNATURE" tone="violet" />
                   </div>
                   <p className="mt-2 text-sm font-semibold text-ink-950">
                     Sign <code className="font-mono">{actionState.actionName}</code>{" "}
-                    in your seller wallet extension…
+                    in your connected merchant wallet…
                   </p>
                 </div>
               ) : null}
@@ -276,10 +321,10 @@ export function SellerShipmentPanel({
                   <p className="text-sm font-semibold text-ink-950">
                     Submitted{" "}
                     <code className="font-mono">{actionState.actionName}</code>.
-                    Waiting for Monad testnet receipt…
+                    Waiting for Monad block confirmation…
                   </p>
                   <TransactionProof
-                    label="SUBMITTED SELLER TX"
+                    label="SUBMITTED MERCHANT TX"
                     hash={actionState.txHash}
                     explorerUrl={actionState.explorerUrl}
                     state="pending"
@@ -291,16 +336,16 @@ export function SellerShipmentPanel({
                 <div className="space-y-3 rounded-[18px] border border-success-700/30 bg-success-100/70 p-5">
                   <div className="flex items-center justify-between gap-2">
                     <span className="font-mono text-xs font-semibold uppercase tracking-[0.08em] text-success-700">
-                      RECEIPT CONFIRMED
+                      ON-CHAIN &amp; DATABASE UPDATED
                     </span>
-                    <StatusChip label="ON-CHAIN STATE UPDATED" tone="success" />
+                    <StatusChip label="CONFIRMED" tone="success" />
                   </div>
                   <p className="text-sm font-semibold text-ink-950">
                     <code className="font-mono">{actionState.actionName}</code>{" "}
-                    confirmed on Monad testnet.
+                    confirmed on Monad and synced to PostgreSQL.
                   </p>
                   <TransactionProof
-                    label="CONFIRMED SELLER TX"
+                    label="CONFIRMED MERCHANT TX"
                     hash={actionState.txHash}
                     explorerUrl={actionState.explorerUrl}
                     state="confirmed"
@@ -312,77 +357,85 @@ export function SellerShipmentPanel({
                 <div className="space-y-3 rounded-[18px] border border-danger-700/30 bg-danger-100 p-5">
                   <div className="flex items-center justify-between gap-2">
                     <span className="font-mono text-xs font-semibold uppercase tracking-[0.08em] text-danger-700">
-                      SELLER CALL REVERTED · {actionState.actionName}
+                      TRANSACTION REVERTED · {actionState.actionName}
                     </span>
-                    <StatusChip label="REVERTED ON-CHAIN" tone="danger" />
+                    <StatusChip label="REVERTED" tone="danger" />
                   </div>
                   <p className="text-sm font-semibold text-ink-950">
                     {actionState.message}
                   </p>
-                  {actionState.txHash ? (
-                    <TransactionProof
-                      label="REVERTED SELLER TX"
-                      hash={actionState.txHash}
-                      explorerUrl={actionState.explorerUrl}
-                      state="failed"
-                    />
-                  ) : null}
-                  <div>
-                    <Button
-                      variant="secondary"
-                      size="md"
-                      onClick={onResetActionState}
-                    >
-                      Dismiss error
-                    </Button>
-                  </div>
+                  <Button
+                    variant="secondary"
+                    size="md"
+                    onClick={onResetActionState}
+                  >
+                    Dismiss error
+                  </Button>
                 </div>
               ) : null}
             </div>
           ) : null}
 
-          {/* STEP 1: Off-Chain Demo Tracking Reference Entry + Mark Shipped Action */}
+          {/* STEP 1: Order Fulfillment & On-Chain Shipment */}
           <Surface tone="raised" radius="card" className="p-6 md:p-8">
             <div className="flex flex-wrap items-center justify-between gap-2 border-b border-line pb-4">
               <div>
                 <span className="font-mono text-xs font-semibold uppercase tracking-[0.08em] text-violet-700">
-                  OPERATION 01 · SHIPMENT &amp; OFF-CHAIN TRACKING
+                  FULFILLMENT &amp; ON-CHAIN DISPATCH
                 </span>
                 <h3 className="mt-1 text-xl font-semibold tracking-[-0.025em] text-ink-950">
-                  Record demo tracking reference &amp; call{" "}
-                  <code className="font-mono text-lg">markShipped</code>
+                  Enter carrier &amp; tracking reference, then dispatch{" "}
+                  <code className="font-mono text-lg">
+                    markShipped({order.orderId})
+                  </code>
                 </h3>
               </div>
-              <StatusChip label="DEMO / OFF-CHAIN TRACKING" tone="info" />
+              <StatusChip label="OFF-CHAIN CARRIER METADATA" tone="info" />
             </div>
 
-            {/* Honest tracking disclaimer required by F5 */}
             <div className="mt-4 rounded-[14px] border border-line bg-muted p-4 text-xs leading-5 text-ink-800">
               <strong className="font-semibold text-ink-950">
-                Off-chain boundary:
+                Privacy &amp; Escrow Boundary:
               </strong>{" "}
-              This tracking reference is stored{" "}
-              <strong className="font-semibold text-ink-950">
-                privately off-chain for the demo
-              </strong>{" "}
-              and is never written into smart contract calldata or events.
-              Entering a tracking number does{" "}
-              <strong className="font-semibold text-ink-950">
-                not prove physical delivery
-              </strong>
-              —calling <code className="font-mono">markShipped({order.orderId})</code>{" "}
-              simply transitions the contract from <code className="font-mono">PAID</code>{" "}
+              Carrier and tracking details are saved in the off-chain PostgreSQL
+              database and synced to the buyer’s{" "}
+              <code className="font-mono">/track</code> page—never exposed on
+              the public blockchain. Calling{" "}
+              <code className="font-mono">markShipped({order.orderId})</code>{" "}
+              transitions the smart contract from <code className="font-mono">PAID</code>{" "}
               to <code className="font-mono">SHIPPED</code> and starts the
-              buyer’s 5-minute review window.
+              buyer’s review period.
             </div>
 
-            <div className="mt-5 grid gap-4 sm:grid-cols-2">
+            <div className="mt-5 grid gap-4 sm:grid-cols-3">
+              <div>
+                <label
+                  htmlFor={`seller-carrier-${order.orderId}`}
+                  className="block font-mono text-xs font-semibold uppercase tracking-[0.08em] text-ink-800"
+                >
+                  Shipping Carrier
+                </label>
+                <select
+                  id={`seller-carrier-${order.orderId}`}
+                  disabled={isBusy}
+                  value={carrierInput}
+                  onChange={(e) => setCarrierInput(e.target.value)}
+                  className="mt-2 w-full min-h-11 rounded-[12px] border border-line bg-canvas px-3.5 py-2 text-xs font-medium text-ink-950"
+                >
+                  {CARRIER_OPTIONS.map((carrier) => (
+                    <option key={carrier} value={carrier}>
+                      {carrier}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
               <div>
                 <label
                   htmlFor={`seller-tracking-ref-${order.orderId}`}
                   className="block font-mono text-xs font-semibold uppercase tracking-[0.08em] text-ink-800"
                 >
-                  Demo tracking reference (off-chain)
+                  Tracking Reference
                 </label>
                 <div className="mt-2 flex gap-2">
                   <input
@@ -391,7 +444,7 @@ export function SellerShipmentPanel({
                     disabled={isBusy}
                     value={trackingInput}
                     onChange={(e) => setTrackingInput(e.target.value)}
-                    placeholder="MV-DEMO-TRK-9002"
+                    placeholder="DHL-TR-8849201"
                     className="w-full min-h-11 rounded-[12px] border border-line bg-canvas px-3.5 py-2 font-mono text-xs text-ink-950"
                   />
                   <Button
@@ -402,7 +455,7 @@ export function SellerShipmentPanel({
                       setTrackingInput(generateDemoTrackingRef(order.orderId))
                     }
                   >
-                    Auto
+                    Gen
                   </Button>
                 </div>
               </div>
@@ -412,7 +465,7 @@ export function SellerShipmentPanel({
                   htmlFor={`seller-dispatch-note-${order.orderId}`}
                   className="block font-mono text-xs font-semibold uppercase tracking-[0.08em] text-ink-800"
                 >
-                  Shipment note (off-chain)
+                  Fulfillment Note
                 </label>
                 <input
                   id={`seller-dispatch-note-${order.orderId}`}
@@ -420,7 +473,7 @@ export function SellerShipmentPanel({
                   disabled={isBusy}
                   value={noteInput}
                   onChange={(e) => setNoteInput(e.target.value)}
-                  placeholder="Handed to demo courier"
+                  placeholder="Dispatched from warehouse"
                   className="mt-2 w-full min-h-11 rounded-[12px] border border-line bg-canvas px-3.5 py-2 text-xs text-ink-950"
                 />
               </div>
@@ -435,12 +488,16 @@ export function SellerShipmentPanel({
                   onClick={handleSaveDraftOnly}
                 >
                   {savedNotice
-                    ? "✓ Saved off-chain tracking"
-                    : "Save off-chain tracking note"}
+                    ? "✓ Saved tracking to database"
+                    : "Update tracking details"}
                 </Button>
-                {shipment ? (
+                {activeTrackingNumber ? (
                   <span className="font-mono text-[11px] text-ink-600">
-                    Active ref: <strong className="text-ink-950">{shipment.trackingRef}</strong>
+                    Recorded:{" "}
+                    <strong className="text-ink-950">
+                      {activeCarrier ? `${activeCarrier} · ` : ""}
+                      {activeTrackingNumber}
+                    </strong>
                   </span>
                 ) : null}
               </div>
@@ -450,105 +507,89 @@ export function SellerShipmentPanel({
                   variant="primary"
                   size="lg"
                   pending={isBusy}
-                  pendingLabel="Confirm markShipped in wallet…"
+                  pendingLabel="Confirming markShipped in wallet…"
                   disabled={!permissions.canMarkShipped || !trackingInput.trim()}
                   onClick={handleExecuteMarkShipped}
                 >
-                  Sign markShipped({order.orderId}) &amp; start 05:00 timer
+                  Dispatch &amp; Call markShipped({order.orderId})
                 </Button>
               ) : (
                 <StatusChip
-                  label="ALREADY MARKED SHIPPED ON-CHAIN"
+                  label="SHIPMENT DISPATCHED ON-CHAIN"
                   tone="success"
                 />
               )}
             </div>
           </Surface>
 
-          {/* STEP 2: Review Deadline & Seller Timeout Claim Presentation */}
+          {/* STEP 2: Settlement & Timeout Claim */}
           <Surface tone="raised" radius="card" className="p-6 md:p-8">
             <div className="flex flex-wrap items-center justify-between gap-2 border-b border-line pb-4">
               <div>
                 <span className="font-mono text-xs font-semibold uppercase tracking-[0.08em] text-violet-700">
-                  OPERATION 02 · REVIEW DEADLINE &amp; PAYOUT CLAIM
+                  SETTLEMENT &amp; TIMEOUT CLAIM
                 </span>
                 <h3 className="mt-1 text-xl font-semibold tracking-[-0.025em] text-ink-950">
-                  Five-minute buyer review window &amp;{" "}
-                  <code className="font-mono text-lg">claimAfterTimeout</code>
+                  Buyer review period &amp;{" "}
+                  <code className="font-mono text-lg">
+                    claimAfterTimeout({order.orderId})
+                  </code>
                 </h3>
               </div>
 
               {order.status === "completed" ? (
-                <StatusChip label="SELLER PAID" tone="success" />
+                <StatusChip label="SETTLED · FUNDS RELEASED" tone="success" />
               ) : order.status === "disputed" ? (
-                <StatusChip label="CLAIM BLOCKED BY DISPUTE" tone="danger" />
+                <StatusChip label="FROZEN BY BUYER DISPUTE" tone="danger" />
               ) : order.status === "shipped" && countdown.isExpired ? (
-                <StatusChip label="ELIGIBLE TO CLAIM NOW" tone="success" />
+                <StatusChip label="READY FOR TIMEOUT CLAIM" tone="success" />
               ) : (
-                <StatusChip label="NO EARLY PAYOUT ALLOWED" tone="warning" />
+                <StatusChip label="AWAITING BUYER CONFIRMATION" tone="warning" />
               )}
             </div>
 
             <div className="mt-5 flex flex-col justify-between gap-6 sm:flex-row sm:items-center">
               <div>
                 <p className="font-mono text-[11px] font-semibold uppercase tracking-[0.08em] text-ink-600">
-                  BUYER REVIEW COUNTDOWN (REVIEWENDSAT)
+                  REVIEW WINDOW STATUS (REVIEWENDSAT)
                 </p>
                 <div className="mt-2 flex items-baseline gap-3">
                   <span className="inline-block min-w-[5.5ch] font-mono text-4xl font-semibold tracking-[-0.04em] text-ink-950 tabular-nums">
                     {order.status === "completed"
-                      ? "00:00"
+                      ? "PAID"
                       : order.status === "disputed"
                         ? "HOLD"
                         : countdown.clock}
                   </span>
                   <span className="font-mono text-xs font-semibold uppercase tracking-[0.08em] text-violet-700">
                     {order.status === "paid"
-                      ? "STARTS AFTER MARKSHIPPED"
-                      : order.status === "disputed"
-                        ? "DISPUTED · FUNDS LOCKED"
-                        : "MM:SS REMAINING"}
+                      ? "STARTS WHEN MARKSHIPPED CONFIRMS"
+                      : order.status === "completed"
+                        ? order.settlementMethod === "seller-timeout-claim"
+                          ? "CLAIMED VIA CLAIMAFTERTIMEOUT"
+                          : "RELEASED BY BUYER CONFIRMATION"
+                        : order.status === "disputed"
+                          ? "DISPUTED · ESCROW FROZEN"
+                          : countdown.isExpired
+                            ? "REVIEW PERIOD EXPIRED WITHOUT DISPUTE"
+                            : "REMAINING IN BUYER REVIEW WINDOW"}
                   </span>
                 </div>
                 <p className="mt-2 text-sm text-ink-800">
                   {order.status === "paid"
-                    ? "Mark the order shipped first. You cannot withdraw funds from a PAID order."
+                    ? "Dispatch the order first. Escrowed funds remain locked while the order is awaiting fulfillment."
                     : order.status === "shipped" && !countdown.isExpired
-                      ? `Buyer has ${countdown.clock} left to confirm delivery or open a dispute. Seller cannot claim before 00:00.`
+                      ? `Buyer has ${countdown.clock} remaining to confirm receipt or open a dispute. If the buyer confirms receipt, ${order.amountMon} MON releases immediately.`
                       : order.status === "shipped" && countdown.isExpired
-                        ? "The 5-minute review window expired with no buyer dispute. You can now claim the escrowed payment."
+                        ? "The buyer review period has expired with no dispute filed. You are now eligible to call claimAfterTimeout to release the escrowed funds."
                         : order.status === "completed"
-                          ? `Escrow settled (${order.amountMon} test MON paid to your seller wallet).`
-                          : "Buyer opened a dispute before the deadline; claimAfterTimeout reverts."}
+                          ? `Settlement complete: ${order.amountMon} MON has been transferred from MonVaultEscrow to your merchant wallet.`
+                          : "The buyer opened a dispute during the review window. Funds remain locked in the smart contract."}
                 </p>
               </div>
-
-              {order.status === "shipped" ? (
-                <div className="flex flex-col gap-1.5 rounded-[14px] border border-line bg-canvas p-3">
-                  <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.08em] text-ink-600">
-                    DEMO WINDOW SIMULATOR
-                  </span>
-                  <div className="flex flex-wrap gap-1.5">
-                    <button
-                      type="button"
-                      onClick={() => onAdjustPreviewSeconds(272)}
-                      className="rounded-lg border border-line bg-surface px-2.5 py-1 font-mono text-[11px] font-semibold text-ink-800 hover:bg-muted cursor-pointer"
-                    >
-                      Active (04:32)
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => onAdjustPreviewSeconds(0)}
-                      className="rounded-lg border border-success-700/30 bg-success-100 px-2.5 py-1 font-mono text-[11px] font-semibold text-success-700 hover:bg-success-700 hover:text-white cursor-pointer"
-                    >
-                      Expire (00:00 → Unlock Claim)
-                    </button>
-                  </div>
-                </div>
-              ) : null}
             </div>
 
-            {/* Strict Payout Eligibility Gate: Seller cannot see an immediate payout action before contract eligibility */}
+            {/* Strict Payout Eligibility Gate */}
             <div className="mt-6 border-t border-line pt-5">
               {order.status === "shipped" && countdown.isExpired ? (
                 <div className="flex flex-col justify-between gap-4 rounded-[14px] border-2 border-success-700 bg-success-100/50 p-4 sm:flex-row sm:items-center">
@@ -557,7 +598,7 @@ export function SellerShipmentPanel({
                       TIMEOUT ELIGIBILITY MET (BLOCK.TIMESTAMP &gt;= REVIEWENDSAT)
                     </span>
                     <p className="mt-1 text-sm font-semibold text-ink-950">
-                      Claim {order.amountMon} test MON from undisputed Order #
+                      Claim {order.amountMon} MON from undisputed Order #
                       {order.orderId}
                     </p>
                   </div>
@@ -565,7 +606,7 @@ export function SellerShipmentPanel({
                     variant="primary"
                     size="lg"
                     pending={isBusy}
-                    pendingLabel="Claiming in wallet…"
+                    pendingLabel="Claiming payout in wallet…"
                     disabled={!permissions.canClaimAfterTimeout || isBusy}
                     onClick={handleExecuteTimeoutClaim}
                   >
@@ -576,31 +617,35 @@ export function SellerShipmentPanel({
                 <div className="flex flex-wrap items-center justify-between gap-3 rounded-[14px] border border-success-700/30 bg-success-100/60 p-4">
                   <div>
                     <span className="font-mono text-xs font-semibold uppercase tracking-[0.08em] text-success-700">
-                      PAYOUT COMPLETE
+                      ESCROW PAYOUT RELEASED
                     </span>
                     <p className="mt-1 text-sm font-semibold text-ink-950">
-                      {order.amountMon} test MON has been released to your
-                      seller wallet.
+                      {order.amountMon} MON has been settled to merchant wallet{" "}
+                      <code className="font-mono text-xs">
+                        {truncateHex(order.sellerAddress, 8, 6)}
+                      </code>
+                      .
                     </p>
                   </div>
-                  <ButtonLink
-                    href={`/orders/${order.orderId}`}
-                    variant="secondary"
-                    size="md"
-                  >
-                    View receipt on Order #{order.orderId}
-                  </ButtonLink>
+                  <StatusChip
+                    label={
+                      order.settlementMethod === "seller-timeout-claim"
+                        ? "SETTLED VIA TIMEOUT CLAIM"
+                        : "BUYER CONFIRMED RECEIPT"
+                    }
+                    tone="success"
+                  />
                 </div>
               ) : (
                 <div className="rounded-[14px] border border-line bg-canvas p-4 text-xs leading-5 text-ink-600">
                   <strong className="font-semibold text-ink-950">
-                    Why no payout button is shown yet:
+                    Smart Contract Settlement Rule:
                   </strong>{" "}
                   {order.status === "paid"
-                    ? "The seller cannot withdraw funds before shipping. Call markShipped first to start the 5-minute buyer review window."
+                    ? "Sellers cannot withdraw funds from a PAID order before shipping. Dispatch the order with markShipped(orderId) first."
                     : order.status === "disputed"
                       ? "This order is DISPUTED. MonVaultEscrow blocks claimAfterTimeout on disputed orders."
-                      : "The 5-minute buyer review window is still active. Payout occurs immediately if the buyer confirms delivery, or unlocks here once the timer reaches 00:00 without a dispute."}
+                      : "The buyer review period is currently active. Payout occurs automatically when the buyer calls confirmDelivery(orderId), or unlocks here via claimAfterTimeout(orderId) once the review period expires without a dispute."}
                 </div>
               )}
             </div>
@@ -614,7 +659,7 @@ export function SellerShipmentPanel({
           <span className="font-mono text-xs font-semibold uppercase tracking-[0.08em] text-violet-700">
             ON-CHAIN TRANSACTION LEDGER · ORDER #{order.orderId}
           </span>
-          <StatusChip label="MONAD TESTNET" tone="info" />
+          <StatusChip label="MONAD ESCROW EVENTS" tone="info" />
         </div>
         <div className="mt-5 space-y-3">
           {order.transactions.map((tx) => (

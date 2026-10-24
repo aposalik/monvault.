@@ -10,23 +10,37 @@ export interface DemoShipmentMetadata {
   updatedAtIso: string;
 }
 
-const STORAGE_KEY = "monvault_offchain_shipments_v1";
+const STORAGE_KEY = "monvault_offchain_shipments_v2";
 const EVENT_NAME = "monvault:shipments-updated";
 
 const SEEDED_SHIPMENTS: Record<string, DemoShipmentMetadata> = {
-  "1": {
-    orderId: "1",
-    trackingRef: "MV-DEMO-TRK-9041",
-    carrierLabel: "Off-Chain Demo Courier (Simulated)",
-    dispatchNote: "Handed to Monad Blitz demo runner · Box sealed",
-    updatedAtIso: "2026-10-23T10:15:00+03:00",
+  "101": {
+    orderId: "101",
+    trackingRef: "DHL-TR-8849201",
+    carrierLabel: "DHL Express",
+    dispatchNote: "Dispatched from Ankara Precision Lab fulfillment center",
+    updatedAtIso: "2026-10-24T08:15:00+03:00",
   },
-  "3": {
-    orderId: "3",
-    trackingRef: "MV-DEMO-TRK-9038",
-    carrierLabel: "Off-Chain Demo Courier (Simulated)",
-    dispatchNote: "Demo shipment logged prior to buyer dispute",
-    updatedAtIso: "2026-10-23T09:50:00+03:00",
+  "103": {
+    orderId: "103",
+    trackingRef: "1Z999AA10192837465",
+    carrierLabel: "UPS Express Saver",
+    dispatchNote: "Delivered and confirmed by buyer",
+    updatedAtIso: "2026-10-23T19:20:00+03:00",
+  },
+  "104": {
+    orderId: "104",
+    trackingRef: "ARK-552019482",
+    carrierLabel: "Aras Kargo Priority",
+    dispatchNote: "Shipment logged prior to buyer dispute",
+    updatedAtIso: "2026-10-23T15:10:00+03:00",
+  },
+  "105": {
+    orderId: "105",
+    trackingRef: "FDX-774920184",
+    carrierLabel: "FedEx International Priority",
+    dispatchNote: "Delivered to Kavaklıdere reception",
+    updatedAtIso: "2026-10-23T12:00:00+03:00",
   },
 };
 
@@ -84,8 +98,8 @@ export function saveDemoShipmentMetadata(
 }
 
 export function generateDemoTrackingRef(orderId: string): string {
-  const padded = orderId.padStart(2, "0");
-  return `MV-DEMO-TRK-90${padded}`;
+  const padded = orderId.padStart(3, "0");
+  return `DHL-TR-8849${padded}`;
 }
 
 function subscribeToDemoShipments(callback: () => void): () => void {

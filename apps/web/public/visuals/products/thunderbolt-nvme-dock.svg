@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 480" fill="none">
+  <rect width="640" height="480" rx="28" fill="#F6F5FA"/>
+  <circle cx="320" cy="240" r="185" fill="#ECE9F8"/>
+  <!-- Dock Shadow -->
+  <rect x="116" y="196" width="424" height="122" rx="22" fill="#100B2B"/>
+  <!-- Anodized Chassis -->
+  <rect x="104" y="182" width="424" height="122" rx="22" fill="#FFFFFF" stroke="#100B2B" stroke-width="4"/>
+  <!-- Front Bezel -->
+  <rect x="122" y="202" width="388" height="82" rx="14" fill="#100B2B"/>
+  <!-- Thunderbolt 4 Ports -->
+  <rect x="148" y="232" width="36" height="18" rx="6" fill="#6E56CF" stroke="#FFFFFF" stroke-width="2"/>
+  <rect x="200" y="232" width="36" height="18" rx="6" fill="#6E56CF" stroke="#FFFFFF" stroke-width="2"/>
+  <!-- SD UHS-II Slot -->
+  <rect x="256" y="237" width="68" height="8" rx="4" fill="#ECE9F8"/>
+  <!-- 2.5GbE & Audio Ports -->
+  <rect x="346" y="226" width="44" height="30" rx="6" fill="#181236" stroke="#C4B5FD" stroke-width="2.5"/>
+  <circle cx="422" cy="241" r="11" fill="#ECE9F8" stroke="#6E56CF" stroke-width="3"/>
+  <!-- Power LED Indicator -->
+  <circle cx="472" cy="241" r="9" fill="#15803D" stroke="#FFFFFF" stroke-width="2.5"/>
+</svg>
