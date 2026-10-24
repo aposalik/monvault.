@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 480" fill="none">
+  <rect width="640" height="480" rx="28" fill="#F6F5FA"/>
+  <circle cx="320" cy="240" r="185" fill="#ECE9F8"/>
+  <!-- Ring Outer Shadow -->
+  <ellipse cx="332" cy="252" rx="132" ry="118" fill="#100B2B"/>
+  <!-- Outer Brushed Titanium Band -->
+  <ellipse cx="320" cy="240" rx="132" ry="118" fill="#FFFFFF" stroke="#100B2B" stroke-width="5"/>
+  <ellipse cx="320" cy="240" rx="112" ry="98" fill="#ECE9F8" stroke="#6E56CF" stroke-width="3"/>
+  <!-- Inner Biometric Sensor Band -->
+  <ellipse cx="320" cy="240" rx="84" ry="70" fill="#100B2B"/>
+  <ellipse cx="320" cy="248" rx="72" ry="56" fill="#F6F5FA"/>
+  <!-- Optical PPG Nodes -->
+  <circle cx="290" cy="182" r="7" fill="#15803D" stroke="#FFFFFF" stroke-width="2"/>
+  <circle cx="320" cy="176" r="8" fill="#6E56CF" stroke="#FFFFFF" stroke-width="2"/>
+  <circle cx="350" cy="182" r="7" fill="#15803D" stroke="#FFFFFF" stroke-width="2"/>
+</svg>

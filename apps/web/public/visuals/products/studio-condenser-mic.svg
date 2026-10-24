@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 480" fill="none">
+  <rect width="640" height="480" rx="28" fill="#F6F5FA"/>
+  <circle cx="320" cy="240" r="185" fill="#ECE9F8"/>
+  <!-- Weighted Desk Base -->
+  <rect x="236" y="384" width="168" height="28" rx="14" fill="#100B2B"/>
+  <rect x="228" y="374" width="168" height="26" rx="13" fill="#FFFFFF" stroke="#100B2B" stroke-width="4"/>
+  <!-- Yoke Mount -->
+  <path d="M242 224v102c0 32 28 48 70 48s70-16 70-48V224" stroke="#100B2B" stroke-width="10" stroke-linecap="round"/>
+  <!-- Capsule Shadow -->
+  <rect x="274" y="88" width="104" height="226" rx="52" fill="#100B2B"/>
+  <!-- Broadcast Capsule Body -->
+  <rect x="262" y="78" width="104" height="226" rx="52" fill="#FFFFFF" stroke="#100B2B" stroke-width="4"/>
+  <!-- Acoustic Mesh Grille -->
+  <rect x="274" y="92" width="80" height="96" rx="40" fill="#181236" stroke="#6E56CF" stroke-width="3"/>
+  <line x1="286" y1="122" x2="342" y2="122" stroke="#C4B5FD" stroke-width="2.5"/>
+  <line x1="282" y1="140" x2="346" y2="140" stroke="#C4B5FD" stroke-width="2.5"/>
+  <line x1="286" y1="158" x2="342" y2="158" stroke="#C4B5FD" stroke-width="2.5"/>
+  <!-- Gain Dial -->
+  <circle cx="314" cy="236" r="18" fill="#6E56CF" stroke="#100B2B" stroke-width="3"/>
+  <circle cx="314" cy="236" r="6" fill="#FFFFFF"/>
+</svg>

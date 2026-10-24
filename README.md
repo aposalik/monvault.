@@ -158,10 +158,10 @@ The visual direction is **“a transaction you can see.”** It turns the escrow
 | --- | --- | --- |
 | Escrow contract | Implemented | Create, ship, confirm, dispute, and timeout-claim flows are implemented. |
 | Contract tests | Implemented | Coverage includes authorization, state transitions, exact payouts, timeout boundaries, and reentrancy. |
-| Web foundation | Implemented | Next.js, TypeScript, responsive landing page, approved brand assets, fonts, and seeded catalog. |
-| Testnet deployment | Planned | Contract address and explorer proof follow deployment. |
-| Wallet integration | Planned | `viem`/`wagmi` integration begins with checkout. |
-| Commerce + seller flows | Planned | Shop, checkout, tracking, and seller operations follow the shared interface handoff. |
+| Web foundation | Implemented | Next.js, TypeScript, 9-section portfolio homepage (`F1`), approved brand assets, fonts, and design system primitives. |
+| Commerce + seller flows | Implemented | Shop, product detail, one-seller cart (`F2`), checkout presentation (`F3`), buyer tracking (`F4`), seller operations (`F5`), and responsive/a11y/demo QA (`F6`). |
+| Testnet deployment | Planned | Contract address and explorer proof follow deployment (`S1`). |
+| Wallet integration | Planned | Live `viem`/`wagmi` contract reads and writes follow the shared interface handoff (`S2`–`S4`). |
 
 See [`docs/PHASES.md`](docs/PHASES.md) for delivery acceptance and [`docs/TEAM-WORKFLOW.md`](docs/TEAM-WORKFLOW.md) for ownership boundaries.
 
