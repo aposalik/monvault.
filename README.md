@@ -160,7 +160,7 @@ The visual direction is **“a transaction you can see.”** It turns the escrow
 | Escrow contract | Implemented | Create, ship, confirm, dispute, and timeout-claim flows are implemented. |
 | Contract tests | Implemented | Coverage includes authorization, state transitions, exact payouts, timeout boundaries, and reentrancy. |
 | Web foundation | Implemented | Next.js, TypeScript, responsive landing page, approved brand assets, fonts, and seeded catalog. |
-| Testnet deployment | Planned | Contract address and explorer proof follow deployment. |
+| Testnet deployment | Verified | Contract deployment and a buyer-funded 1 MON `PAID` order are recorded with explorer evidence. |
 | Wallet integration | Planned | `viem`/`wagmi` integration begins with checkout. |
 | Commerce + seller flows | Planned | Shop, checkout, tracking, and seller operations follow the shared interface handoff. |
 
@@ -220,8 +220,8 @@ npm run contract:test
 
 Before presenting:
 
-- [ ] Buyer and seller use separate disposable test wallets.
-- [ ] Test MON is actually held by the deployed contract.
+- [x] Buyer and seller use separate disposable test wallets.
+- [x] Test MON is actually held by the deployed contract.
 - [ ] The seller cannot withdraw before buyer confirmation or review expiry.
 - [ ] A non-buyer cannot confirm delivery.
 - [ ] Confirmation, timeout, and dispute paths have transaction or revert evidence in the Monad explorer.

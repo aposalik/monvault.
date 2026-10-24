@@ -83,7 +83,7 @@ SHIPPED + 5 minutes + no dispute → seller timeout claim → COMPLETED
 
 ---
 
-## Phase 3 — Testnet deployment and proof
+## Phase 3 — Testnet deployment and proof ✅
 
 **Owner:** Salik. Fahad presents explorer proof in the UI after deployment.
 
@@ -104,9 +104,11 @@ SHIPPED + 5 minutes + no dispute → seller timeout claim → COMPLETED
 - Deployment transaction: `0x7f5d7d5d379c21ddd746ce356a70a3ebfad56293b22af0f0e47db7b626a845a3`.
 - Deployment receipt, chain ID, `REVIEW_WINDOW()`, runtime bytecode, and creation input were independently checked against the local artifact.
 - Disposable buyer and seller roles are recorded in [`TESTNET-PROOF.md`](TESTNET-PROOF.md).
-- The buyer-funded paid-order proof remains pending faucet funding and a MetaMask-confirmed `createOrder` transaction.
+- The buyer created order `1` with exactly `1 MON` in transaction `0xf17cf16b9272ba1f2adf219a61bc002d4a9b9c25663144afbae191a7f8dcc3b0`.
+- The confirmed receipt, `OrderPaid` event, `getOrder(1)` output, and `1 MON` escrow balance were independently verified.
+- Public contract and seller addresses are saved in `.env.example`; local runtime configuration remains in gitignored `.env.local`.
 
-**Exit check:** A direct contract call creates a paid order, and its transaction is visible in an explorer.
+**Exit check:** Passed. A direct contract call created a real `PAID` order and its transaction is visible in the Monad explorer.
 
 ---
 
