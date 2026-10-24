@@ -49,10 +49,11 @@ Salik wants to understand and review every meaningful change. Work in small slic
 - Phase 2 escrow contract is implemented with create, ship, confirm, dispute, and five-minute timeout-claim transitions.
 - The contract uses unique hashed order references, explicit buyer/seller authorization, checks-effects-interactions, and a reentrancy guard for payouts.
 - 18 Foundry tests passed; smart contract clean.
-- Fahad submitted PR #9 (`fahad/web-commerce-flow`). Reviewed and identified scope over-complications.
-- All initial issues (#1–#6) removed from GitHub.
-- Created 6 new, detailed issues (#10–#15) assigned to `@MFahadFaisal` specifying PostgreSQL catalog, clean navigation, reactive cart, dedicated `/track`, decoupled `/seller` portal, and removal of demo gimmicks.
+- Phase 3 Monad Testnet deployment verified (`0xc48545Be217840A472C6d5BA1282A15BDaA54767`) with recorded 1 MON paid order transaction.
+- Fahad completed PR #9 (`fahad/web-commerce-flow`) implementing work packages F1–F6 (shop, product detail, cart, checkout presentation, buyer tracking, seller orders, and demo polish).
+- Merged into integration branch `integrate/phase-4-buyer-flow` to wire up the real on-chain buyer flow for Phase 4 completion.
+- Issue roadmap updated: GitHub issues #10–#16 created and assigned to `@MFahadFaisal` for clean navigation, PostgreSQL store, reactive cart, dedicated `/track`, and dedicated `/seller` dashboard.
 
 ## Last updated
 
-2026-10-24 — Architectural scope refined: PostgreSQL-backed catalog, clean header (Shop/Track/Cart icon), decoupled seller portal, purged demo gimmicks. GitHub issues #10–#15 created and assigned to Fahad.
+2026-10-24 — Merged Fahad's commerce implementation into `integrate/phase-4-buyer-flow`. Wiring real testnet contract calls to complete Phase 4 buyer flow verification. Issue #16 assigned to Fahad for the dedicated seller dashboard.
