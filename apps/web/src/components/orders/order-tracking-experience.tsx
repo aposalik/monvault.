@@ -14,6 +14,7 @@ import {
   truncateHex,
 } from "@/components/ui/transaction-proof";
 import { DEMO_SELLER, getDefaultProduct } from "@/data/catalog";
+import { fetchOnChainOrder, getExplorerTxUrl, type OnChainOrder } from "@/lib/chain/client";
 import { useDemoShipments } from "@/lib/orders/demo-tracking-store";
 import {
   type ConnectedWalletRole,
@@ -64,14 +65,15 @@ export function OrderTrackingExperience({
   const initialMissing = orderId === "999" || orderId === "missing";
 
   const [isMissingOrder, setIsMissingOrder] = useState(initialMissing);
+  const [onChainOrder, setOnChainOrder] = useState<OnChainOrder | null>(null);
   const [status, setStatus] = useState<OrderStatus>(
-    orderId === "2" ? "paid" : orderId === "3" ? "disputed" : "shipped",
+    orderId === "1" ? "paid" : orderId === "2" ? "paid" : orderId === "3" ? "disputed" : "shipped",
   );
   const [settlementMethod, setSettlementMethod] = useState<
     "buyer-confirmed" | "seller-timeout-claim" | undefined
   >(undefined);
   const [remainingSeconds, setRemainingSeconds] = useState<number | null>(
-    orderId === "2" ? null : 272,
+    orderId === "1" || orderId === "2" ? null : 272,
   );
   const [walletRole, setWalletRole] = useState<ConnectedWalletRole>("buyer");
   const [actionState, setActionState] = useState<OrderActionState>({
@@ -80,12 +82,42 @@ export function OrderTrackingExperience({
   const [activePreset, setActivePreset] = useState<TrackingInspectorPreset>(
     initialMissing
       ? "missing-order"
-      : orderId === "2"
+      : orderId === "1" || orderId === "2"
         ? "paid"
         : orderId === "3"
           ? "disputed"
           : "shipped-active",
   );
+
+  // Automatically fetch real on-chain order from Monad testnet
+  useEffect(() => {
+    let active = true;
+    async function loadChainOrder() {
+      try {
+        const live = await fetchOnChainOrder(orderId);
+        if (!active || !live) return;
+
+        setOnChainOrder(live);
+        setIsMissingOrder(false);
+        const mappedStatus = live.status === "none" ? "paid" : (live.status as OrderStatus);
+        setStatus(mappedStatus);
+        setActivePreset(mappedStatus as TrackingInspectorPreset);
+
+        if (mappedStatus === "shipped") {
+          const nowSec = Math.floor(Date.now() / 1000);
+          setRemainingSeconds(Math.max(0, live.reviewEndsAt - nowSec));
+        } else {
+          setRemainingSeconds(null);
+        }
+      } catch (err) {
+        console.warn("Could not query on-chain contract state:", err);
+      }
+    }
+    loadChainOrder();
+    return () => {
+      active = false;
+    };
+  }, [orderId]);
 
   // Display-only 1s countdown ticker while order is in SHIPPED state
   useEffect(() => {
@@ -258,19 +290,27 @@ export function OrderTrackingExperience({
   const { getShipment } = useDemoShipments();
   const storedShipment = getShipment(orderId);
 
+  const verifiedDepositTx =
+    orderId === "1"
+      ? ("0xf17cf16b9272ba1f2adf219a61bc002d4a9b9c25663144afbae191a7f8dcc3b0" as const)
+      : TX_PAID;
+
   const orderModel: NormalizedOrderView = {
     orderId,
     orderRef:
-      "0x5f9c281073747564696f6865616470686f6e6573000000000000000000000000",
+      onChainOrder?.orderRef ??
+      (orderId === "1"
+        ? "0xd0af8cf291f6ddb7eaa6f912221fc878baac3bbca3f8355f2976924f291c2892"
+        : "0x5f9c281073747564696f6865616470686f6e6573000000000000000000000000"),
     productSlug: defaultProduct.slug,
     productName: defaultProduct.name,
     productSku: defaultProduct.sku,
     productImageSrc: defaultProduct.imageSrc,
     productImageAlt: defaultProduct.imageAlt,
-    amountMon: defaultProduct.priceMon,
-    buyerAddress: BUYER_WALLET,
+    amountMon: onChainOrder?.amountMon ?? defaultProduct.priceMon,
+    buyerAddress: (onChainOrder?.buyer as `0x${string}`) ?? BUYER_WALLET,
     sellerName: DEMO_SELLER.name,
-    sellerAddress: DEMO_SELLER.address,
+    sellerAddress: (onChainOrder?.seller as `0x${string}`) ?? DEMO_SELLER.address,
     status,
     reviewEndsAtSeconds: remainingSeconds,
     demoTrackingRef:
@@ -285,8 +325,8 @@ export function OrderTrackingExperience({
     transactions: [
       {
         label: "01 · ESCROW DEPOSIT (CREATEORDER)",
-        txHash: TX_PAID,
-        explorerUrl: `${SAMPLE_MONAD_EXPLORER_BASE}/${TX_PAID}`,
+        txHash: verifiedDepositTx,
+        explorerUrl: getExplorerTxUrl(verifiedDepositTx),
         state: "confirmed",
       },
       ...(status !== "paid"

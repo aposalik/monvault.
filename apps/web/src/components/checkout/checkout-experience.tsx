@@ -10,6 +10,7 @@ import { StatusChip } from "@/components/ui/status-chip";
 import { Surface } from "@/components/ui/surface";
 import { useCartSelection } from "@/data/cart-store";
 import { getDefaultProduct, getProductBySlug } from "@/data/catalog";
+import { getExplorerTxUrl, submitCreateOrderOnChain } from "@/lib/chain/client";
 import {
   buildOpaqueOrderRefPreview,
   type CheckoutActionState,
@@ -155,7 +156,58 @@ export function CheckoutExperience({
       return;
     }
 
-    // Deterministic two-step preview: awaiting-signature -> confirming receipt -> confirmed
+    // If browser Web3 provider is available, execute real on-chain transaction
+    if (typeof window !== "undefined" && window.ethereum) {
+      try {
+        setActivePreset("awaiting-signature");
+        setActionState({ phase: "awaiting-signature" });
+
+        const result = await submitCreateOrderOnChain({
+          orderRef: opaqueOrderRef,
+          sellerAddress: activeProduct.sellerAddress as `0x${string}`,
+          amountMon: activeProduct.priceMon,
+        });
+
+        setActivePreset("confirmed");
+        setActionState({
+          phase: "confirmed",
+          orderId: result.orderId,
+          txHash: result.txHash,
+          explorerUrl: getExplorerTxUrl(result.txHash),
+        });
+        return;
+      } catch (err: unknown) {
+        const error = err as {
+          name?: string;
+          code?: number;
+          message?: string;
+          shortMessage?: string;
+        };
+        if (
+          error?.name === "UserRejectedRequestError" ||
+          error?.code === 4001 ||
+          error?.message?.includes("User rejected")
+        ) {
+          setActivePreset("rejected");
+          setActionState({
+            phase: "rejected",
+            message: "User rejected the createOrder signature request in wallet.",
+          });
+        } else {
+          setActivePreset("reverted");
+          setActionState({
+            phase: "reverted",
+            reasonCode: error?.shortMessage || "Transaction failed",
+            message:
+              error?.message ||
+              "MonVaultEscrow transaction reverted or could not be submitted.",
+          });
+        }
+        return;
+      }
+    }
+
+    // Deterministic two-step preview when running in simulator mode without MetaMask
     setActivePreset("awaiting-signature");
     setActionState({ phase: "awaiting-signature" });
 
