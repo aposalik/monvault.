@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 360" fill="none" role="img" aria-labelledby="arch-title arch-desc">
+  <title id="arch-title">monvault. System Architecture Boundaries</title>
+  <desc id="arch-desc">Three-column diagram showing the Buyer and Seller Browser, MonVaultEscrow on Monad Testnet for public money rules, and Private Off-Chain Order Metadata for product and delivery details.</desc>
+  <rect width="960" height="360" rx="24" fill="#FBFAFF" stroke="#DED9EE" stroke-width="2"/>
+
+  <!-- Column 1: Client / Wallet -->
+  <rect x="32" y="36" width="268" height="288" rx="18" fill="#FFFFFF" stroke="#100B2B" stroke-width="2"/>
+  <rect x="52" y="56" width="128" height="24" rx="6" fill="#E8E0FF"/>
+  <text x="64" y="72" fill="#4C22D4" font-family="monospace" font-size="11" font-weight="700" letter-spacing="1">01 / CLIENT LAYER</text>
+  <text x="52" y="108" fill="#100B2B" font-family="sans-serif" font-size="20" font-weight="700">Next.js + Wallet</text>
+  <text x="52" y="136" fill="#554B78" font-family="sans-serif" font-size="13">• Renders catalog &amp; order timeline</text>
+  <text x="52" y="160" fill="#554B78" font-family="sans-serif" font-size="13">• Explains rules before signature</text>
+  <text x="52" y="184" fill="#554B78" font-family="sans-serif" font-size="13">• Signs calls via MetaMask</text>
+  <rect x="52" y="216" width="228" height="84" rx="12" fill="#F0EDFA" stroke="#DED9EE"/>
+  <text x="68" y="242" fill="#100B2B" font-family="monospace" font-size="11" font-weight="700">NEVER OWNS</text>
+  <text x="68" y="264" fill="#554B78" font-family="sans-serif" font-size="12">Escrow custody or optimistic</text>
+  <text x="68" y="282" fill="#554B78" font-family="sans-serif" font-size="12">unconfirmed payment status.</text>
+
+  <!-- Connector 1 -> 2 -->
+  <path d="M300 130H346" stroke="#6738F2" stroke-width="2.5"/>
+  <polygon points="346,125 356,130 346,135" fill="#6738F2"/>
+  <path d="M356 230H300" stroke="#100B2B" stroke-width="2" stroke-dasharray="4 4"/>
+
+  <!-- Column 2: Monad Testnet Contract -->
+  <rect x="356" y="36" width="268" height="288" rx="18" fill="#120A32" stroke="#6738F2" stroke-width="2"/>
+  <rect x="376" y="56" width="148" height="24" rx="6" fill="#241B52"/>
+  <text x="388" y="72" fill="#C7B4FF" font-family="monospace" font-size="11" font-weight="700" letter-spacing="1">02 / MONAD TESTNET</text>
+  <text x="376" y="108" fill="#FFFFFF" font-family="sans-serif" font-size="20" font-weight="700">MonVaultEscrow.sol</text>
+  <text x="376" y="136" fill="#E8E0FF" font-family="sans-serif" font-size="13">• Holds exact test MON in vault</text>
+  <text x="376" y="160" fill="#E8E0FF" font-family="sans-serif" font-size="13">• Enforces 5-minute review window</text>
+  <text x="376" y="184" fill="#E8E0FF" font-family="sans-serif" font-size="13">• Pays seller or freezes on dispute</text>
+  <rect x="376" y="216" width="228" height="84" rx="12" fill="#241B52" stroke="#554B78"/>
+  <text x="392" y="242" fill="#C7B4FF" font-family="monospace" font-size="11" font-weight="700">PUBLIC ON-CHAIN ONLY</text>
+  <text x="392" y="264" fill="#E8E0FF" font-family="sans-serif" font-size="12">orderId, orderRef hash, buyer,</text>
+  <text x="392" y="282" fill="#E8E0FF" font-family="sans-serif" font-size="12">seller, amount, reviewEndsAt.</text>
+
+  <!-- Connector 1 -> 3 -->
+  <path d="M624 180H660" stroke="#DED9EE" stroke-width="2"/>
+
+  <!-- Column 3: Private Off-Chain Store -->
+  <rect x="660" y="36" width="268" height="288" rx="18" fill="#FFFFFF" stroke="#DED9EE" stroke-width="2"/>
+  <rect x="680" y="56" width="154" height="24" rx="6" fill="#DDF6EA"/>
+  <text x="692" y="72" fill="#167451" font-family="monospace" font-size="11" font-weight="700" letter-spacing="1">03 / OFF-CHAIN DATA</text>
+  <text x="680" y="108" fill="#100B2B" font-family="sans-serif" font-size="20" font-weight="700">Private Commerce</text>
+  <text x="680" y="136" fill="#554B78" font-family="sans-serif" font-size="13">• Seeded product catalog &amp; media</text>
+  <text x="680" y="160" fill="#554B78" font-family="sans-serif" font-size="13">• Private buyer delivery address</text>
+  <text x="680" y="184" fill="#554B78" font-family="sans-serif" font-size="13">• Demo carrier tracking reference</text>
+  <rect x="680" y="216" width="228" height="84" rx="12" fill="#FFE3E8" stroke="#A6324A" stroke-opacity="0.3"/>
+  <text x="696" y="242" fill="#A6324A" font-family="monospace" font-size="11" font-weight="700">SECURITY BOUNDARY</text>
+  <text x="696" y="264" fill="#100B2B" font-family="sans-serif" font-size="12">Backend can never sign calls</text>
+  <text x="696" y="282" fill="#100B2B" font-family="sans-serif" font-size="12">or move customer escrow funds.</text>
+</svg>

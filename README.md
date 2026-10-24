@@ -18,6 +18,7 @@
   <a href="#architecture">Architecture</a> ·
   <a href="#design-system">Design</a> ·
   <a href="#getting-started">Getting started</a> ·
+  <a href="docs/TESTNET-PROOF.md">Testnet proof</a> ·
   <a href="docs/DEMO-RUNBOOK.md">Demo runbook</a>
 </p>
 
@@ -158,12 +159,12 @@ The visual direction is **“a transaction you can see.”** It turns the escrow
 | --- | --- | --- |
 | Escrow contract | Implemented | Create, ship, confirm, dispute, and timeout-claim flows are implemented. |
 | Contract tests | Implemented | Coverage includes authorization, state transitions, exact payouts, timeout boundaries, and reentrancy. |
-| Web foundation | Implemented | Next.js, TypeScript, responsive landing page, approved brand assets, fonts, and seeded catalog. |
-| Testnet deployment | Planned | Contract address and explorer proof follow deployment. |
-| Wallet integration | Planned | `viem`/`wagmi` integration begins with checkout. |
-| Commerce + seller flows | Planned | Shop, checkout, tracking, and seller operations follow the shared interface handoff. |
+| Web foundation | Implemented | Next.js, TypeScript, portfolio homepage, brand assets, self-hosted fonts, and design system primitives. |
+| Testnet deployment | Verified | Deployed on Monad Testnet at `0xc48545Be217840A472C6d5BA1282A15BDaA54767` with recorded buyer-funded `PAID` order proof. |
+| Commerce + buyer tracking | In Integration | Shop, product detail, cart, checkout presentation, and buyer order tracking merged for Phase 4 chain integration. |
+| Seller operations | Planned | Decoupling into dedicated merchant portal (`/seller`) connected to the shared PostgreSQL database. |
 
-See [`docs/PHASES.md`](docs/PHASES.md) for delivery acceptance and [`docs/TEAM-WORKFLOW.md`](docs/TEAM-WORKFLOW.md) for ownership boundaries.
+See [`docs/TESTNET-PROOF.md`](docs/TESTNET-PROOF.md) for public deployment evidence, [`docs/PHASES.md`](docs/PHASES.md) for delivery acceptance, and [`docs/TEAM-WORKFLOW.md`](docs/TEAM-WORKFLOW.md) for ownership boundaries.
 
 ## Repository layout
 
@@ -219,8 +220,8 @@ npm run contract:test
 
 Before presenting:
 
-- [ ] Buyer and seller use separate disposable test wallets.
-- [ ] Test MON is actually held by the deployed contract.
+- [x] Buyer and seller use separate disposable test wallets.
+- [x] Test MON is actually held by the deployed contract.
 - [ ] The seller cannot withdraw before buyer confirmation or review expiry.
 - [ ] A non-buyer cannot confirm delivery.
 - [ ] Confirmation, timeout, and dispute paths have transaction or revert evidence in the Monad explorer.

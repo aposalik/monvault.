@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 480" fill="none" role="img" aria-labelledby="kp-title">
+  <title id="kp-title">Tactile Macro Keypad — monvault. Demo Product</title>
+  <rect width="640" height="480" fill="#F0EDFA"/>
+  <rect x="32" y="32" width="576" height="416" rx="24" fill="#FBFAFF" stroke="#DED9EE" stroke-width="2"/>
+  <text x="56" y="70" fill="#554B78" font-family="monospace" font-size="12" font-weight="700" letter-spacing="1.2">SKU // MV-DESK-02</text>
+  <rect x="468" y="50" width="116" height="28" rx="14" fill="#E8E0FF" stroke="#C7B4FF"/>
+  <text x="486" y="68" fill="#4C22D4" font-family="monospace" font-size="11" font-weight="700" letter-spacing="1">0.45 TEST MON</text>
+
+  <!-- Isometric shadow block -->
+  <rect x="190" y="136" width="276" height="232" rx="24" fill="#120A32"/>
+  <!-- Main aluminum chassis -->
+  <rect x="176" y="122" width="276" height="232" rx="24" fill="#FFFFFF" stroke="#100B2B" stroke-width="4"/>
+
+  <!-- Rotary encoder knob + OLED bar -->
+  <rect x="202" y="148" width="152" height="48" rx="10" fill="#120A32"/>
+  <text x="220" y="177" fill="#C7B4FF" font-family="monospace" font-size="13" font-weight="700" letter-spacing="1.2">LAYER 01 // READY</text>
+  <circle cx="398" cy="172" r="26" fill="#6738F2" stroke="#100B2B" stroke-width="4"/>
+  <circle cx="398" cy="172" r="10" fill="#FBFAFF"/>
+
+  <!-- 6 Mechanical keycaps -->
+  <rect x="202" y="216" width="68" height="52" rx="10" fill="#F0EDFA" stroke="#100B2B" stroke-width="3"/>
+  <rect x="280" y="216" width="68" height="52" rx="10" fill="#F0EDFA" stroke="#100B2B" stroke-width="3"/>
+  <rect x="358" y="216" width="68" height="52" rx="10" fill="#E8E0FF" stroke="#4C22D4" stroke-width="3"/>
+
+  <rect x="202" y="280" width="68" height="52" rx="10" fill="#F0EDFA" stroke="#100B2B" stroke-width="3"/>
+  <rect x="280" y="280" width="68" height="52" rx="10" fill="#F0EDFA" stroke="#100B2B" stroke-width="3"/>
+  <rect x="358" y="280" width="68" height="52" rx="10" fill="#6738F2" stroke="#100B2B" stroke-width="3"/>
+  <text x="377" y="311" fill="#FFFFFF" font-family="monospace" font-size="12" font-weight="700">ESC</text>
+</svg>

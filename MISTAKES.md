@@ -22,3 +22,10 @@ Record concrete mistakes, near-misses, and recoveries here. Update this file whe
 - **Impact:** The GitHub push and Foundry installation could not complete. Next.js dependency installation initially stalled.
 - **Recovery:** Kept TLS verification enabled, stopped hung installers, and completed npm installation from the existing verified local cache with `npm install --offline`.
 - **Prevention:** Diagnose network trust before long installs; never work around it by disabling certificate verification. Foundry remains pending until the host trust chain is repaired.
+
+### 2026-10-23 — Next.js 16 Turbopack PostCSS worker IPC panic during `next build`
+
+- **What happened:** `next build` (which defaults to Turbopack in Next.js 16) panicked with `Failed to write app endpoint /page` when spawning a child Node process for `@tailwindcss/postcss` on `globals.css`.
+- **Impact:** Production build failed with exit code 1 even though `eslint` and `tsc --noEmit` succeeded.
+- **Recovery:** Configured `"build": "next build --webpack"` in `apps/web/package.json`, which runs PostCSS in-process and completes static generation cleanly.
+- **Prevention:** Keep `--webpack` on the production build script so local and CI builds remain deterministic.

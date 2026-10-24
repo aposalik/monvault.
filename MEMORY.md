@@ -30,41 +30,30 @@ Salik wants to understand and review every meaningful change. Work in small slic
 
 - Use **Monad testnet** with native **test MON** from a faucet.
 - Buyer and seller use separate disposable **MetaMask** wallets.
-- Shipping uses a clearly-labelled **demo tracking reference** stored privately off-chain; no carrier API is required.
-- Each escrow order contains one product and one seller.
-- A seller marks an order shipped, starting a **5-minute buyer review window**.
-- Buyer may confirm delivery for an immediate payout, or open a dispute to freeze funds.
-- If the five-minute window ends without a dispute, the seller may claim the escrow with `claimAfterTimeout`.
-- Disputes have no automatic/admin resolution in the MVP; funds remain frozen.
-
-## MVP contract states
-
-`PAID → SHIPPED → COMPLETED`
-
-Alternative path: `SHIPPED → DISPUTED`. A `SHIPPED` order with an expired review window can also be completed by the seller's timeout claim.
-
-## Team ownership
-
-- **Abdullah Salik:** smart contract, wallet/chain integration, testnet deployment, and technical demo.
-- **Fahad Faisal:** homepage and commerce pages, seeded product/off-chain tracking flow, responsive presentation.
-- Shared: three-path end-to-end verification and final demo rehearsal.
+- Product catalog and shipping metadata are managed via a **PostgreSQL** database (Supabase / Postgres).
+- Customer store is a clean, authentic e-commerce marketplace (Trendyol-style) with category filters, search, and prices in native **MON**.
+- Cart operates reactively with live badge counter and starts empty before adding items.
+- Dedicated customer order tracking route at `/track`.
+- Header is strictly minimal: Home, Shop, Track, and a Cart icon. Premature text tabs (Cart, Checkout, Seller View) are excluded.
+- Seller View is decoupled into an independent merchant portal (`/seller`) connected to the same PostgreSQL database.
+- No "demo" gimmick widgets, fake timers, or runbook bars.
+- Smart contract manages immutable escrow rules (`PAID → SHIPPED → COMPLETED` or `DISPUTED`).
 
 ## Open decisions
 
-- Will off-chain shipping/order metadata use seeded JSON or Supabase Postgres?
+- PostgreSQL hosting (Supabase cloud instance or local/containerized Postgres).
 - Confirm the organizer's currently recommended testnet faucet/RPC at the event.
 
 ## Current implementation state
 
 - Phase 2 escrow contract is implemented with create, ship, confirm, dispute, and five-minute timeout-claim transitions.
 - The contract uses unique hashed order references, explicit buyer/seller authorization, checks-effects-interactions, and a reentrancy guard for payouts.
-- 18 Foundry tests passed in the operator terminal; OpenClaw independently verified Solidity formatting and kept web lint/typecheck/build green.
-- Next.js 16 + TypeScript web workspace is scaffolded and passes lint, typecheck, and production build.
-- Root npm workspace, lockfile, public environment template, and seeded demo product exist.
-- Foundational rebrand and design system pushed to `origin/chore/monvault-rebrand-design`.
-- GitHub CLI authenticated; Fahad's F1–F6 issues created and assigned to `@MFahadFaisal`.
-- Root README was refreshed as the professional project entry point, using the approved monvault. lockup and documenting the actual implementation status and trust boundaries.
+- 18 Foundry tests passed; smart contract clean.
+- Phase 3 Monad Testnet deployment verified (`0xc48545Be217840A472C6d5BA1282A15BDaA54767`) with recorded 1 MON paid order transaction.
+- Fahad completed PR #9 (`fahad/web-commerce-flow`) implementing work packages F1–F6 (shop, product detail, cart, checkout presentation, buyer tracking, seller orders, and demo polish).
+- Merged into integration branch `integrate/phase-4-buyer-flow` to wire up the real on-chain buyer flow for Phase 4 completion.
+- Issue roadmap updated: GitHub issues #10–#16 created and assigned to `@MFahadFaisal` for clean navigation, PostgreSQL store, reactive cart, dedicated `/track`, and dedicated `/seller` dashboard.
 
 ## Last updated
 
-2026-10-23 — Root README refreshed with the approved lockup, accurate architecture, status, setup, and demo guidance; ready for PR/merge and Phase 3 testnet deployment (S2).
+2026-10-24 — Merged Fahad's commerce implementation into `integrate/phase-4-buyer-flow`. Wiring real testnet contract calls to complete Phase 4 buyer flow verification. Issue #16 assigned to Fahad for the dedicated seller dashboard.
